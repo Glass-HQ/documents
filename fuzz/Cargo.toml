@@ -10,7 +10,7 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = "0.4"
 anydoc = { path = ".." }
-cfb = "0.14.0"
+cfb = "0.16.0"
 zip = { version = "9.5.1", default-features = false, features = ["deflate"] }
 
 [[bin]]
