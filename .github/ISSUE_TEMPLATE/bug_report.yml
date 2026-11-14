@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a problem you can reproduce.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep the report short, with a small reproduction if you can.
+        Don't include credentials, private documents or other sensitive data. Report security problems privately, as SECURITY.md describes.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "0.3.0 or abc1234"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, runtime, framework and operating system, with versions.
+      placeholder: "Chrome 150, React 19, macOS 27"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: What you did, what happened, and when it happens.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: input
+    id: reproduction
+    attributes:
+      label: Reproduction (optional)
+      description: A link to a small repository or sandbox, or a file that shows the problem and that you're free to share.
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else (optional)
+      description: Logs, screenshots or other details. Remove secrets first.

@@ -1,8 +1,25 @@
 {
   "name": "@glass-hq/documents",
   "version": "0.3.0",
-  "description": "Parse any file to Markdown and render it in the browser: PDF, Office, OpenDocument, EPUB, spreadsheets, images, media and more.",
+  "description": "Glass's document viewer and Markdown converter: parse PDF, Office, OpenDocument, EPUB, spreadsheets, images and media to Markdown and render them in the browser. Built on Firecrawl's anydoc.",
+  "keywords": [
+    "document",
+    "docx",
+    "epub",
+    "markdown",
+    "opendocument",
+    "pdf",
+    "pptx",
+    "viewer",
+    "webassembly",
+    "xlsx"
+  ],
+  "homepage": "https://github.com/Glass-HQ/documents#readme",
+  "bugs": {
+    "url": "https://github.com/Glass-HQ/documents/issues"
+  },
   "license": "MIT",
+  "author": "Glass HQ",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Glass-HQ/documents.git",
