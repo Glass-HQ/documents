@@ -97,7 +97,9 @@ test('a pdf with scanned pages rejects naming them instead of dropping them', as
 
 test('the package exports everything the native binding does', async () => {
   const [wrapper, native] = await Promise.all([import('./anydoc.js'), import('./index.js')])
-  assert.deepEqual(Object.keys(wrapper).sort(), Object.keys(native).sort())
+  // `__napiBindingTarget` is the generated loader's own metadata, not the binding's API.
+  const api = Object.keys(native).filter((name) => !name.startsWith('__napi'))
+  assert.deepEqual(Object.keys(wrapper).sort(), api.sort())
 })
 
 // A stand-in for api.firecrawl.dev that answers every request with `reply`

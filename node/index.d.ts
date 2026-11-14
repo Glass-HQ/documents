@@ -34,6 +34,15 @@ export interface NeedsOcrError extends Error {
   /** Pages in the document. */
   pageCount: number
 }
+
+/**
+ * Which binding artifact the generated loader actually loaded: `'native'` for
+ * a native addon, otherwise the `platformArchABI` of the WASI flavor. Every
+ * flavor napi-rs can build is listed, because `NAPI_RS_NATIVE_LIBRARY_PATH`
+ * can point the loader at a WASI artifact this package does not build itself.
+ */
+export declare const __napiBindingTarget: 'native' | 'wasm32-wasi' | 'wasm32-wasip1'
+
 /**
  * An embedded binary asset (image, object payload). Bytes are always
  * retained, so a document stays self-contained.
@@ -74,7 +83,7 @@ export declare const enum BlockKind {
   blockQuote = 'blockQuote',
   codeBlock = 'codeBlock',
   rule = 'rule',
-  math = 'math'
+  math = 'math',
 }
 
 export interface Cell {
@@ -95,7 +104,7 @@ export interface CellSlot {
 
 export declare const enum CellSlotKind {
   origin = 'origin',
-  covered = 'covered'
+  covered = 'covered',
 }
 
 export interface Document {
@@ -131,7 +140,7 @@ export declare const enum Format {
   xlsx = 'xlsx',
   ods = 'ods',
   odp = 'odp',
-  csv = 'csv'
+  csv = 'csv',
 }
 
 /**
@@ -165,7 +174,7 @@ export declare const enum ImageSourceKind {
    * No usable source: the image's part is missing or unreadable and it has
    * no URL. Only the alt text remains.
    */
-  unavailable = 'unavailable'
+  unavailable = 'unavailable',
 }
 
 export interface Inline {
@@ -201,7 +210,7 @@ export declare const enum InlineKind {
   /** An inline formula. */
   math = 'math',
   /** A checkbox control. */
-  checkbox = 'checkbox'
+  checkbox = 'checkbox',
 }
 
 export interface LinkTarget {
@@ -216,7 +225,7 @@ export declare const enum LinkTargetKind {
   /** Scheme-less relative reference, preserved as written. */
   relative = 'relative',
   /** Internal target: a heading anchor or an `anchor` inline. */
-  anchor = 'anchor'
+  anchor = 'anchor',
 }
 
 export interface List {
@@ -243,7 +252,7 @@ export declare const enum MarkerKind {
   lowerAlpha = 'lowerAlpha',
   upperAlpha = 'upperAlpha',
   lowerRoman = 'lowerRoman',
-  upperRoman = 'upperRoman'
+  upperRoman = 'upperRoman',
 }
 
 export interface Note {
@@ -254,7 +263,7 @@ export interface Note {
 
 export declare const enum NoteKind {
   footnote = 'footnote',
-  endnote = 'endnote'
+  endnote = 'endnote',
 }
 
 /** Fully resolved character style. */
@@ -281,7 +290,7 @@ export declare const enum TableKind {
   /** A real data table. */
   data = 'data',
   /** Layout scaffolding (text boxes, positioning tables). */
-  layout = 'layout'
+  layout = 'layout',
 }
 
 /**
