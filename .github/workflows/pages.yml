@@ -1,14 +1,14 @@
+# Deploys the playground to GitHub Pages with each release, or when run from the Actions tab.
+# Nothing runs on everyday pushes.
 name: Pages
 
 on:
   push:
-    branches: [main]
+    tags: ["documents@*"]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -18,39 +18,51 @@ jobs:
   build:
     name: Build the playground
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          version: 11.9.0
-      - uses: actions/setup-node@v7
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          node-version: 24
-          cache: pnpm
-      - uses: dtolnay/rust-toolchain@stable
+          bun-version-file: .bun-version
+
+      - uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: documents-wasm
+          package-manager: |
+            bun: false
+          node-version-file: package.json
+          run-install: false
+
+      - name: Install the Rust toolchain
+        run: rustup toolchain install
+
       - name: Install wasm-pack
-        run: >
-          curl -sSfL https://github.com/wasm-bindgen/wasm-pack/releases/download/v0.15.1/wasm-pack-v0.15.1-x86_64-unknown-linux-musl.tar.gz
-          | tar xz --strip-components=1 -C /usr/local/bin wasm-pack-v0.15.1-x86_64-unknown-linux-musl/wasm-pack
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm --dir wasm/www build
-      - uses: actions/upload-pages-artifact@v5
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/wasm-pack.tar.gz" \
+            https://github.com/wasm-bindgen/wasm-pack/releases/download/v0.15.1/wasm-pack-v0.15.1-x86_64-unknown-linux-musl.tar.gz
+          echo "410101009739b9d01c7d5affaaad6e9c9a24b4cba6791a4805db8e89b9bf7af2  $RUNNER_TEMP/wasm-pack.tar.gz" | sha256sum --check
+          sudo tar xzf "$RUNNER_TEMP/wasm-pack.tar.gz" --strip-components=1 -C /usr/local/bin \
+            wasm-pack-v0.15.1-x86_64-unknown-linux-musl/wasm-pack
+
+      - run: bun install --frozen-lockfile
+      - run: vp run build
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: wasm/www/dist
 
   deploy:
     name: Deploy
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

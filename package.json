@@ -4,7 +4,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Glass-HQ/documents.git"
+    "url": "git+https://github.com/Glass-HQ/documents.git"
   },
   "workspaces": {
     "packages": [

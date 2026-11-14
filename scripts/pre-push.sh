@@ -30,6 +30,8 @@ vp check
 vp run build
 vp run test
 node scripts/format-table.mjs --check
+node scripts/changelog.ts check
+node scripts/check-package.ts
 
 vp run cargo:fmt
 vp run cargo:clippy

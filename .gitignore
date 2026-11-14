@@ -26,3 +26,5 @@ __pycache__/
 /packages/documents/src/core/wasm-pdf/
 node_modules/
 /wasm/www/dist/
+# Built from changelog/ by scripts/changelog.ts at release
+/packages/*/CHANGELOG.md
