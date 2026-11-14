@@ -18,10 +18,35 @@ async function newest(directory) {
   return time;
 }
 
-const sources = Math.max(await newest(join(root, "src")), await newest(join(root, "wasm")), (await stat(join(root, "Cargo.lock"))).mtimeMs);
-for (const [folder, features] of [["wasm", ["--no-default-features"]], ["wasm-pdf", []]]) {
+const sources = Math.max(
+  await newest(join(root, "src")),
+  await newest(join(root, "wasm")),
+  (await stat(join(root, "Cargo.lock"))).mtimeMs,
+);
+for (const [folder, features] of [
+  ["wasm", ["--no-default-features"]],
+  ["wasm-pdf", []],
+]) {
   const out = join(core, folder);
-  const built = await stat(join(out, "anydoc_wasm_bg.wasm")).then((info) => info.mtimeMs, () => 0);
+  const built = await stat(join(out, "anydoc_wasm_bg.wasm")).then(
+    (info) => info.mtimeMs,
+    () => 0,
+  );
   if (built >= sources) continue;
-  execFileSync("wasm-pack", ["build", "wasm", "--target", "web", "--release", "--out-dir", out, "--no-pack", "--", ...features], { cwd: root, stdio: "inherit" });
+  execFileSync(
+    "wasm-pack",
+    [
+      "build",
+      "wasm",
+      "--target",
+      "web",
+      "--release",
+      "--out-dir",
+      out,
+      "--no-pack",
+      "--",
+      ...features,
+    ],
+    { cwd: root, stdio: "inherit" },
+  );
 }

@@ -29,14 +29,21 @@ export interface ReadResult {
 
 const allowedProtocols = new Set(["http:", "https:", "blob:"]);
 
-export async function readSource(source: DocumentSource, options: ReadOptions): Promise<ReadResult> {
+export async function readSource(
+  source: DocumentSource,
+  options: ReadOptions,
+): Promise<ReadResult> {
   const { maxBytes, signal } = options;
   signal?.throwIfAborted();
   if (source instanceof Blob) {
     checkSize(source.size, maxBytes);
     const bytes = new Uint8Array(await source.arrayBuffer());
     signal?.throwIfAborted();
-    return { bytes, name: typeof File !== "undefined" && source instanceof File ? source.name : undefined, mediaType: source.type || undefined };
+    return {
+      bytes,
+      name: typeof File !== "undefined" && source instanceof File ? source.name : undefined,
+      mediaType: source.type || undefined,
+    };
   }
   if (source instanceof ArrayBuffer) {
     checkSize(source.byteLength, maxBytes);
@@ -44,25 +51,47 @@ export async function readSource(source: DocumentSource, options: ReadOptions): 
   }
   if (ArrayBuffer.isView(source)) {
     checkSize(source.byteLength, maxBytes);
-    return { bytes: new Uint8Array(source.buffer, source.byteOffset, source.byteLength), name: undefined, mediaType: undefined };
+    return {
+      bytes: new Uint8Array(source.buffer, source.byteOffset, source.byteLength),
+      name: undefined,
+      mediaType: undefined,
+    };
   }
   if (source instanceof ReadableStream) {
-    return { bytes: await readStream(source, maxBytes, signal), name: undefined, mediaType: undefined };
+    return {
+      bytes: await readStream(source, maxBytes, signal),
+      name: undefined,
+      mediaType: undefined,
+    };
   }
-  const { url: target, init } = typeof source === "string" || source instanceof URL ? { url: source, init: undefined } : source;
+  const { url: target, init } =
+    typeof source === "string" || source instanceof URL ? { url: source, init: undefined } : source;
   const url = parseUrl(target);
   let response: Response;
   try {
     response = await fetch(url, { ...init, ...(signal ? { signal } : {}) });
   } catch (cause) {
-    throw DocumentError.from(cause, { code: "fetchFailed", message: `Couldn't fetch ${url.href}.` });
+    throw DocumentError.from(cause, {
+      code: "fetchFailed",
+      message: `Couldn't fetch ${url.href}.`,
+    });
   }
-  if (!response.ok) throw new DocumentError(`Fetching ${url.href} failed with status ${response.status}.`, { code: "fetchFailed", status: response.status });
+  if (!response.ok)
+    throw new DocumentError(`Fetching ${url.href} failed with status ${response.status}.`, {
+      code: "fetchFailed",
+      status: response.status,
+    });
   const declared = Number(response.headers.get("content-length") ?? Number.NaN);
   if (Number.isFinite(declared)) checkSize(declared, maxBytes);
-  const bytes = response.body ? await readStream(response.body, maxBytes, signal) : new Uint8Array(await response.arrayBuffer());
+  const bytes = response.body
+    ? await readStream(response.body, maxBytes, signal)
+    : new Uint8Array(await response.arrayBuffer());
   checkSize(bytes.byteLength, maxBytes);
-  return { bytes, name: nameFromUrl(url), mediaType: response.headers.get("content-type") ?? undefined };
+  return {
+    bytes,
+    name: nameFromUrl(url),
+    mediaType: response.headers.get("content-type") ?? undefined,
+  };
 }
 
 function parseUrl(value: string | URL): URL {
@@ -70,9 +99,13 @@ function parseUrl(value: string | URL): URL {
   try {
     url = new URL(value, globalThis.location?.href);
   } catch (cause) {
-    throw new DocumentError(`${String(value)} isn't a valid URL.`, { code: "invalidSource", cause });
+    throw new DocumentError(`${String(value)} isn't a valid URL.`, {
+      code: "invalidSource",
+      cause,
+    });
   }
-  if (!allowedProtocols.has(url.protocol)) throw new DocumentError(`${url.protocol} URLs can't be read.`, { code: "invalidSource" });
+  if (!allowedProtocols.has(url.protocol))
+    throw new DocumentError(`${url.protocol} URLs can't be read.`, { code: "invalidSource" });
   return url;
 }
 
@@ -86,7 +119,11 @@ function nameFromUrl(url: URL): string | undefined {
   }
 }
 
-async function readStream(stream: ReadableStream<Uint8Array>, maxBytes: number, signal: AbortSignal | undefined): Promise<Uint8Array> {
+async function readStream(
+  stream: ReadableStream<Uint8Array>,
+  maxBytes: number,
+  signal: AbortSignal | undefined,
+): Promise<Uint8Array> {
   const reader = stream.getReader();
   const chunks: Uint8Array[] = [];
   let size = 0;
@@ -116,8 +153,15 @@ async function readStream(stream: ReadableStream<Uint8Array>, maxBytes: number, 
 }
 
 function checkSize(size: number, maxBytes: number) {
-  if (size > maxBytes) throw new DocumentError(`The document is larger than the ${formatBytes(maxBytes)} limit.`, { code: "tooLarge" });
+  if (size > maxBytes)
+    throw new DocumentError(`The document is larger than the ${formatBytes(maxBytes)} limit.`, {
+      code: "tooLarge",
+    });
 }
 
 const formatBytes = (bytes: number) =>
-  bytes >= 1024 * 1024 ? `${Math.round(bytes / (1024 * 1024))} MB` : bytes >= 1024 ? `${Math.round(bytes / 1024)} KB` : `${bytes} bytes`;
+  bytes >= 1024 * 1024
+    ? `${Math.round(bytes / (1024 * 1024))} MB`
+    : bytes >= 1024
+      ? `${Math.round(bytes / 1024)} KB`
+      : `${bytes} bytes`;

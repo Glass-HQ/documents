@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+  type ReactElement,
+} from "react";
 import type { DocumentSource } from "./core/source.js";
 import { initialState, type ViewerState } from "./view/state.js";
 import { createViewer, type DocumentViewer, type ViewerOptions } from "./view/viewer.js";
@@ -21,7 +28,10 @@ const noop = () => () => {};
  * The viewer reopens when the source, format or name changes; other options
  * are read when they're used, so they don't have to be stable.
  */
-export function useDocumentViewer(source: DocumentSource, options: ViewerOptions = {}): UseDocumentViewer {
+export function useDocumentViewer(
+  source: DocumentSource,
+  options: ViewerOptions = {},
+): UseDocumentViewer {
   const [element, setElement] = useState<HTMLElement | null>(null);
   const [viewer, setViewer] = useState<DocumentViewer | null>(null);
   const latest = useRef(options);
@@ -31,7 +41,12 @@ export function useDocumentViewer(source: DocumentSource, options: ViewerOptions
     const current = latest.current;
     const next = createViewer(element, source, {
       ...current,
-      ...(current.highlight ? { highlight: (text: string, name: string | undefined) => latest.current.highlight!(text, name) } : {}),
+      ...(current.highlight
+        ? {
+            highlight: (text: string, name: string | undefined) =>
+              latest.current.highlight!(text, name),
+          }
+        : {}),
       onLink: (url) => latest.current.onLink?.(url),
     });
     setViewer(next);
@@ -40,7 +55,11 @@ export function useDocumentViewer(source: DocumentSource, options: ViewerOptions
       setViewer(null);
     };
   }, [element, source, options.format, options.name, options.mediaType, options.maxBytes]);
-  const state = useSyncExternalStore(viewer?.subscribe ?? noop, viewer?.getState ?? (() => initialState), () => initialState);
+  const state = useSyncExternalStore(
+    viewer?.subscribe ?? noop,
+    viewer?.getState ?? (() => initialState),
+    () => initialState,
+  );
   return { ref: setElement, state, viewer };
 }
 
@@ -53,7 +72,13 @@ export interface DocumentViewProps extends ViewerOptions {
 }
 
 /** A document filling a div. Use `useDocumentViewer` instead to draw controls beside it. */
-export function DocumentView({ source, className, style, onViewer, ...options }: DocumentViewProps): ReactElement {
+export function DocumentView({
+  source,
+  className,
+  style,
+  onViewer,
+  ...options
+}: DocumentViewProps): ReactElement {
   const { ref, viewer } = useDocumentViewer(source, options);
   const report = useRef(onViewer);
   report.current = onViewer;

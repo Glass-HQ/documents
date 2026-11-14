@@ -17,22 +17,35 @@ function load(build: "core" | "pdf"): Promise<CoreModule> {
   let module = loaded.get(build);
   if (!module) {
     // Each import is written out so bundlers see both builds and their wasm files.
-    module = (build === "pdf"
-      ? import("./wasm-pdf/anydoc_wasm.js").then(async (m) => {
-          await m.default({ module_or_path: await wasmBytes(new URL("./wasm-pdf/anydoc_wasm_bg.wasm", import.meta.url)) });
-          return m as CoreModule;
-        })
-      : import("./wasm/anydoc_wasm.js").then(async (m) => {
-          await m.default({ module_or_path: await wasmBytes(new URL("./wasm/anydoc_wasm_bg.wasm", import.meta.url)) });
-          return m;
-        }));
+    module =
+      build === "pdf"
+        ? import("./wasm-pdf/anydoc_wasm.js").then(async (m) => {
+            await m.default({
+              module_or_path: await wasmBytes(
+                new URL("./wasm-pdf/anydoc_wasm_bg.wasm", import.meta.url),
+              ),
+            });
+            return m as CoreModule;
+          })
+        : import("./wasm/anydoc_wasm.js").then(async (m) => {
+            await m.default({
+              module_or_path: await wasmBytes(
+                new URL("./wasm/anydoc_wasm_bg.wasm", import.meta.url),
+              ),
+            });
+            return m;
+          });
     loaded.set(build, module);
   }
   return module;
 }
 
 /** Run one task on the Rust core. Only PDF to Markdown loads the larger build. */
-export async function runCoreTask(task: CoreTask, bytes: Uint8Array, format: string): Promise<unknown> {
+export async function runCoreTask(
+  task: CoreTask,
+  bytes: Uint8Array,
+  format: string,
+): Promise<unknown> {
   const core = await load(task === "markdown" && format === "pdf" ? "pdf" : "core");
   const name = format as Parameters<CoreModule["toMarkdownBytes"]>[1];
   switch (task) {

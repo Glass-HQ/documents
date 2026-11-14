@@ -1,5 +1,11 @@
 // Everything without a framework: reading, detecting, parsing to Markdown, and the viewer itself.
-export { formats, formatNames, formatFromName, formatFromMediaType, isDocumentFormat } from "./core/formats.js";
+export {
+  formats,
+  formatNames,
+  formatFromName,
+  formatFromMediaType,
+  isDocumentFormat,
+} from "./core/formats.js";
 export type { DocumentFormat, FormatInfo, ParseMethod, RenderMethod } from "./core/formats.js";
 export { detectFormat, looksLikeText } from "./core/detect.js";
 export { DocumentError } from "./core/errors.js";

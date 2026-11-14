@@ -12,7 +12,10 @@ import { cssZoom } from "../zoom.js";
  * reaches the network.
  */
 export const render: RenderFunction = async ({ element, bytes, format, options }) => {
-  const html = micromark(decodeText(bytes, format), { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  const html = micromark(decodeText(bytes, format), {
+    extensions: [gfm()],
+    htmlExtensions: [gfmHtml()],
+  });
   const article = element.ownerDocument.createElement("article");
   article.className = "documents-flow";
   // micromark escapes raw HTML unless told otherwise, so this markup is its own.
@@ -22,5 +25,12 @@ export const render: RenderFunction = async ({ element, bytes, format, options }
   }
   const stopLinks = followLinks(article, options.onLink);
   element.replaceChildren(article);
-  return { zoom: cssZoom(article), search: domSearch(() => article), destroy: () => { stopLinks(); element.replaceChildren(); } };
+  return {
+    zoom: cssZoom(article),
+    search: domSearch(() => article),
+    destroy: () => {
+      stopLinks();
+      element.replaceChildren();
+    },
+  };
 };

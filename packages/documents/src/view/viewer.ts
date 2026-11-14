@@ -12,7 +12,9 @@ export interface ViewerOptions extends OpenOptions {
    * name, returns the element to show, or the element and how to release it.
    * Without one, text shows plain.
    */
-  readonly highlight?: ((text: string, name: string | undefined) => Highlighted | Promise<Highlighted>) | undefined;
+  readonly highlight?:
+    | ((text: string, name: string | undefined) => Highlighted | Promise<Highlighted>)
+    | undefined;
   /**
    * Called when someone follows an external link in the document. The viewer
    * never navigates on its own; without this, links do nothing.
@@ -22,7 +24,9 @@ export interface ViewerOptions extends OpenOptions {
   readonly pdfWorker?: string | URL | undefined;
 }
 
-export type Highlighted = HTMLElement | { readonly element: HTMLElement; readonly destroy: () => void };
+export type Highlighted =
+  | HTMLElement
+  | { readonly element: HTMLElement; readonly destroy: () => void };
 
 /** A document shown in an element, with everything its controls need. */
 export interface DocumentViewer {
@@ -70,26 +74,40 @@ const streamedRenderers = new Set<RenderMethod>(["image", "video", "audio"]);
 
 /** A URL source whose name or format says it's media, so it can stream instead of being read. */
 function streamable(source: DocumentSource, options: ViewerOptions) {
-  const target = typeof source === "string" || source instanceof URL ? source : typeof source === "object" && "url" in source && !("init" in source && source.init) ? source.url : undefined;
+  const target =
+    typeof source === "string" || source instanceof URL
+      ? source
+      : typeof source === "object" && "url" in source && !("init" in source && source.init)
+        ? source.url
+        : undefined;
   if (target === undefined) return undefined;
   const url = new URL(target, globalThis.location?.href);
-  if (url.protocol !== "http:" && url.protocol !== "https:" && url.protocol !== "blob:") return undefined;
+  if (url.protocol !== "http:" && url.protocol !== "https:" && url.protocol !== "blob:")
+    return undefined;
   const name = options.name ?? decodeURIComponent(url.pathname.split("/").at(-1) ?? "");
   const format = options.format ?? formatFromName(name);
   if (!format || !streamedRenderers.has(formats[format].render)) return undefined;
   return { bytes: new Uint8Array(), format, name, url: url.href };
 }
 
-const ZOOM_STEPS = [0.25, 0.33, 0.5, 0.67, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5];
+const ZOOM_STEPS = [
+  0.25, 0.33, 0.5, 0.67, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5,
+];
 
 /**
  * Open a source and render it into `element`, which the viewer fills and
  * scrolls. The element should have a size: the viewer fills it.
  */
-export function createViewer(element: HTMLElement, source: DocumentSource, options: ViewerOptions = {}): DocumentViewer {
+export function createViewer(
+  element: HTMLElement,
+  source: DocumentSource,
+  options: ViewerOptions = {},
+): DocumentViewer {
   const store = new Store<ViewerState>(initialState);
   const controller = new AbortController();
-  const signal = options.signal ? AbortSignal.any([options.signal, controller.signal]) : controller.signal;
+  const signal = options.signal
+    ? AbortSignal.any([options.signal, controller.signal])
+    : controller.signal;
   let renderer: Renderer | undefined;
   let searchController: AbortController | undefined;
   installStyles(element.ownerDocument);
@@ -116,8 +134,10 @@ export function createViewer(element: HTMLElement, source: DocumentSource, optio
       options,
       onPosition: ({ page, sheet }) => {
         const state = store.get();
-        if (page !== undefined && state.page) store.set({ page: { ...state.page, current: page + 1 } });
-        if (sheet !== undefined && state.sheets) store.set({ sheets: { ...state.sheets, current: sheet } });
+        if (page !== undefined && state.page)
+          store.set({ page: { ...state.page, current: page + 1 } });
+        if (sheet !== undefined && state.sheets)
+          store.set({ sheets: { ...state.sheets, current: sheet } });
       },
     });
     if (signal.aborted) {
@@ -128,12 +148,18 @@ export function createViewer(element: HTMLElement, source: DocumentSource, optio
       status: "ready",
       page: renderer.pages ? { current: 1, total: renderer.pages.total } : undefined,
       sheets: renderer.sheets ? { names: renderer.sheets.names, current: 0 } : undefined,
-      zoom: renderer.zoom ? { value: 1, min: renderer.zoom.min, max: renderer.zoom.max } : undefined,
+      zoom: renderer.zoom
+        ? { value: 1, min: renderer.zoom.min, max: renderer.zoom.max }
+        : undefined,
       search: renderer.search ? { query: "", total: 0, current: 0, pending: false } : undefined,
     });
   })().catch((cause: unknown) => {
     if (controller.signal.aborted) return;
-    const error = DocumentError.from(cause, { code: "renderFailed", format: store.get().format, message: "This document couldn't be shown." });
+    const error = DocumentError.from(cause, {
+      code: "renderFailed",
+      format: store.get().format,
+      message: "This document couldn't be shown.",
+    });
     store.set({ status: "error", error });
   });
 
@@ -146,7 +172,10 @@ export function createViewer(element: HTMLElement, source: DocumentSource, optio
   };
   const step = (direction: 1 | -1) => {
     const value = store.get().zoom?.value ?? 1;
-    const next = direction > 0 ? ZOOM_STEPS.find((s) => s > value + 1e-6) : ZOOM_STEPS.findLast((s) => s < value - 1e-6);
+    const next =
+      direction > 0
+        ? ZOOM_STEPS.find((s) => s > value + 1e-6)
+        : ZOOM_STEPS.findLast((s) => s < value - 1e-6);
     if (next !== undefined) setZoom(next);
   };
   const goToPage = (page: number) => {
@@ -196,18 +225,28 @@ export function createViewer(element: HTMLElement, source: DocumentSource, optio
       let shown = false;
       const update = (total: number, pending: boolean) => {
         if (searchSignal.aborted) return;
-        store.set({ search: { query, total, current: total > 0 ? Math.max(1, store.get().search?.current ?? 1) : 0, pending } });
+        store.set({
+          search: {
+            query,
+            total,
+            current: total > 0 ? Math.max(1, store.get().search?.current ?? 1) : 0,
+            pending,
+          },
+        });
         if (!shown && total > 0) {
           shown = true;
           searchable.show(0);
         }
       };
-      void searchable.find(query, searchSignal, (total) => update(total, true)).then(
-        (total) => update(total, false),
-        () => update(store.get().search?.total ?? 0, false),
-      );
+      void searchable
+        .find(query, searchSignal, (total) => update(total, true))
+        .then(
+          (total) => update(total, false),
+          () => update(store.get().search?.total ?? 0, false),
+        );
     },
-    renderThumbnail: (page, target, width = 160) => renderer?.thumbnails?.render(page - 1, target, width) ?? (() => {}),
+    renderThumbnail: (page, target, width = 160) =>
+      renderer?.thumbnails?.render(page - 1, target, width) ?? (() => {}),
     nextMatch: () => showMatch((store.get().search?.current ?? 0) + 1),
     previousMatch: () => showMatch((store.get().search?.current ?? 2) - 1),
     destroy: () => {

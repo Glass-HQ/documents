@@ -12,12 +12,30 @@ interface Level {
   readonly restart?: number;
 }
 interface Numbering {
-  readonly numberings: readonly { id: string; abstractId: string; overrides: readonly { level: number; start?: number; numberingLevel?: Level }[] }[];
+  readonly numberings: readonly {
+    id: string;
+    abstractId: string;
+    overrides: readonly { level: number; start?: number; numberingLevel?: Level }[];
+  }[];
   readonly abstractNumberings: readonly { id: string; levels: readonly Level[] }[];
 }
 
 const roman = (n: number) => {
-  const table: [number, string][] = [[1000, "m"], [900, "cm"], [500, "d"], [400, "cd"], [100, "c"], [90, "xc"], [50, "l"], [40, "xl"], [10, "x"], [9, "ix"], [5, "v"], [4, "iv"], [1, "i"]];
+  const table: [number, string][] = [
+    [1000, "m"],
+    [900, "cm"],
+    [500, "d"],
+    [400, "cd"],
+    [100, "c"],
+    [90, "xc"],
+    [50, "l"],
+    [40, "xl"],
+    [10, "x"],
+    [9, "ix"],
+    [5, "v"],
+    [4, "iv"],
+    [1, "i"],
+  ];
   let out = "";
   for (const [value, digits] of table) for (; n >= value; n -= value) out += digits;
   return out;
@@ -30,13 +48,20 @@ const letters = (n: number) => {
 
 function format(value: number, kind: string | undefined): string {
   switch (kind) {
-    case "upperRoman": return roman(value).toUpperCase();
-    case "lowerRoman": return roman(value);
-    case "upperLetter": return letters(value).toUpperCase();
-    case "lowerLetter": return letters(value);
-    case "decimalZero": return String(value).padStart(2, "0");
-    case "none": return "";
-    default: return String(value);
+    case "upperRoman":
+      return roman(value).toUpperCase();
+    case "lowerRoman":
+      return roman(value);
+    case "upperLetter":
+      return letters(value).toUpperCase();
+    case "lowerLetter":
+      return letters(value);
+    case "decimalZero":
+      return String(value).padStart(2, "0");
+    case "none":
+      return "";
+    default:
+      return String(value);
   }
 }
 
@@ -78,6 +103,7 @@ export function numberLists(root: HTMLElement, numbering: Numbering | undefined)
     });
     // Keep docx-preview's tab or space after the number.
     const original = getComputedStyle(paragraph, "::before").content;
-    paragraph.dataset.marker = text + (original.includes("\t") || original.includes("\\9") ? "\t" : "");
+    paragraph.dataset.marker =
+      text + (original.includes("\t") || original.includes("\\9") ? "\t" : "");
   }
 }

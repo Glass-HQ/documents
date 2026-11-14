@@ -14,26 +14,59 @@ export interface DetectInput {
  * Anything left over is text when it decodes as UTF-8, and `binary` when not.
  */
 export function detectFormat({ bytes, name, mediaType }: DetectInput): DocumentFormat {
-  const hinted = (name === undefined ? undefined : formatFromName(name)) ?? (mediaType === undefined ? undefined : formatFromMediaType(mediaType));
+  const hinted =
+    (name === undefined ? undefined : formatFromName(name)) ??
+    (mediaType === undefined ? undefined : formatFromMediaType(mediaType));
   const sniffed = sniff(bytes);
   if (sniffed !== undefined) return sniffed;
   // A package whose main part sits somewhere unusual is named by its relationships, which are
   // usually compressed. Its name decides then, as long as it names a format of the same container.
-  if (hinted !== undefined && container(bytes) !== undefined && container(bytes) === containerOf[hinted]) return hinted;
+  if (
+    hinted !== undefined &&
+    container(bytes) !== undefined &&
+    container(bytes) === containerOf[hinted]
+  )
+    return hinted;
   if (hinted !== undefined && !needsSignature.has(hinted)) return hinted;
   if (!looksLikeText(bytes)) return "binary";
-  if (/^\s*(?:<\?xml[^>]*>\s*)?(?:<!--[\s\S]*?-->\s*)*<svg[\s>]/iu.test(decodeHead(bytes))) return "svg";
+  if (/^\s*(?:<\?xml[^>]*>\s*)?(?:<!--[\s\S]*?-->\s*)*<svg[\s>]/iu.test(decodeHead(bytes)))
+    return "svg";
   return hinted === "markdown" || hinted === "csv" || hinted === "tsv" ? hinted : "text";
 }
 
 /** Formats with a signature: a name alone never makes a file one of these. */
 const needsSignature = new Set<DocumentFormat>([
-  "pdf", "docx", "doc", "odt", "rtf", "epub", "pptx", "ppt", "odp", "xlsx", "xlsb", "xls", "ods", "image", "video", "audio", "font",
+  "pdf",
+  "docx",
+  "doc",
+  "odt",
+  "rtf",
+  "epub",
+  "pptx",
+  "ppt",
+  "odp",
+  "xlsx",
+  "xlsb",
+  "xls",
+  "ods",
+  "image",
+  "video",
+  "audio",
+  "font",
 ]);
 
 const containerOf: Partial<Record<DocumentFormat, "zip" | "ole">> = {
-  docx: "zip", pptx: "zip", xlsx: "zip", xlsb: "zip", odt: "zip", odp: "zip", ods: "zip", epub: "zip",
-  doc: "ole", ppt: "ole", xls: "ole",
+  docx: "zip",
+  pptx: "zip",
+  xlsx: "zip",
+  xlsb: "zip",
+  odt: "zip",
+  odp: "zip",
+  ods: "zip",
+  epub: "zip",
+  doc: "ole",
+  ppt: "ole",
+  xls: "ole",
 };
 
 function container(bytes: Uint8Array): "zip" | "ole" | undefined {
@@ -71,7 +104,12 @@ function sniff(bytes: Uint8Array): DocumentFormat | undefined {
 }
 
 function sniffMedia(bytes: Uint8Array): DocumentFormat | undefined {
-  if (startsWith(bytes, [0x89, 0x50, 0x4e, 0x47]) || startsWith(bytes, [0xff, 0xd8, 0xff]) || startsWith(bytes, ascii("GIF8"))) return "image";
+  if (
+    startsWith(bytes, [0x89, 0x50, 0x4e, 0x47]) ||
+    startsWith(bytes, [0xff, 0xd8, 0xff]) ||
+    startsWith(bytes, ascii("GIF8"))
+  )
+    return "image";
   if (startsWith(bytes, ascii("BM")) && bytes.length > 14) return "image";
   if (startsWith(bytes, [0, 0, 1, 0]) && bytes.length > 6) return "image";
   if (startsWith(bytes, ascii("RIFF"))) {
@@ -85,11 +123,24 @@ function sniffMedia(bytes: Uint8Array): DocumentFormat | undefined {
     return "video";
   }
   if (startsWith(bytes, [0x1a, 0x45, 0xdf, 0xa3])) return "video";
-  if (startsWith(bytes, ascii("OggS"))) return indexOf(bytes.subarray(0, 256), ascii("theora")) >= 0 ? "video" : "audio";
+  if (startsWith(bytes, ascii("OggS")))
+    return indexOf(bytes.subarray(0, 256), ascii("theora")) >= 0 ? "video" : "audio";
   if (startsWith(bytes, ascii("fLaC")) || startsWith(bytes, ascii("ID3"))) return "audio";
   // An MPEG audio frame sync, but not a UTF-16 byte order mark.
-  if (bytes[0] === 0xff && ((bytes[1] ?? 0) & 0xe0) === 0xe0 && bytes[1] !== 0xfe && bytes[1] !== 0xff && ((bytes[1] ?? 0) & 0x06) !== 0) return "audio";
-  if (startsWith(bytes, [0, 1, 0, 0, 0]) || startsWith(bytes, ascii("OTTO")) || startsWith(bytes, ascii("true"))) return "font";
+  if (
+    bytes[0] === 0xff &&
+    ((bytes[1] ?? 0) & 0xe0) === 0xe0 &&
+    bytes[1] !== 0xfe &&
+    bytes[1] !== 0xff &&
+    ((bytes[1] ?? 0) & 0x06) !== 0
+  )
+    return "audio";
+  if (
+    startsWith(bytes, [0, 1, 0, 0, 0]) ||
+    startsWith(bytes, ascii("OTTO")) ||
+    startsWith(bytes, ascii("true"))
+  )
+    return "font";
   if (startsWith(bytes, ascii("wOFF")) || startsWith(bytes, ascii("wOF2"))) return "font";
   return undefined;
 }
@@ -102,8 +153,10 @@ function indexOf(haystack: Uint8Array, needle: readonly number[]): number {
   return -1;
 }
 
-const u16 = (bytes: Uint8Array, offset: number) => (bytes[offset] ?? 0) | ((bytes[offset + 1] ?? 0) << 8);
-const u32 = (bytes: Uint8Array, offset: number) => (u16(bytes, offset) | (u16(bytes, offset + 2) << 16)) >>> 0;
+const u16 = (bytes: Uint8Array, offset: number) =>
+  (bytes[offset] ?? 0) | ((bytes[offset + 1] ?? 0) << 8);
+const u32 = (bytes: Uint8Array, offset: number) =>
+  (u16(bytes, offset) | (u16(bytes, offset + 2) << 16)) >>> 0;
 
 const zipMimetypes: Record<string, DocumentFormat> = {
   "application/epub+zip": "epub",
@@ -117,7 +170,10 @@ function sniffZip(bytes: Uint8Array): DocumentFormat | undefined {
   const firstName = new TextDecoder().decode(bytes.subarray(30, 30 + u16(bytes, 26)));
   if (firstName === "mimetype" && u16(bytes, 8) === 0) {
     const start = 30 + u16(bytes, 26) + u16(bytes, 28);
-    const mime = new TextDecoder().decode(bytes.subarray(start, start + u32(bytes, 18))).trim().replace(/-template$/u, "");
+    const mime = new TextDecoder()
+      .decode(bytes.subarray(start, start + u32(bytes, 18)))
+      .trim()
+      .replace(/-template$/u, "");
     return zipMimetypes[mime];
   }
   const names = zipEntryNames(bytes);
@@ -167,7 +223,9 @@ function sniffOle(bytes: Uint8Array): DocumentFormat | undefined {
   const next = (sector: number) => {
     const perSector = sectorSize / 4;
     const fat = fatSectors[Math.floor(sector / perSector)];
-    return fat === undefined ? 0xfffffffe : u32(bytes, sectorOffset(fat) + (sector % perSector) * 4);
+    return fat === undefined
+      ? 0xfffffffe
+      : u32(bytes, sectorOffset(fat) + (sector % perSector) * 4);
   };
   const names: string[] = [];
   let sector = u32(bytes, 48);
@@ -177,7 +235,11 @@ function sniffOle(bytes: Uint8Array): DocumentFormat | undefined {
     for (let entry = base; entry < base + sectorSize; entry += 128) {
       const length = u16(bytes, entry + 64);
       if (length < 2 || length > 64) continue;
-      names.push(String.fromCharCode(...Array.from({ length: length / 2 - 1 }, (_, i) => u16(bytes, entry + i * 2))));
+      names.push(
+        String.fromCharCode(
+          ...Array.from({ length: length / 2 - 1 }, (_, i) => u16(bytes, entry + i * 2)),
+        ),
+      );
     }
     sector = next(sector);
   }

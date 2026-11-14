@@ -16,7 +16,9 @@ const LIVE_PAGES = 12;
  */
 export const render: RenderFunction = async ({ element, bytes, signal, options, onPosition }) => {
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = String(options.pdfWorker ?? new URL("../../pdf.worker.min.mjs", import.meta.url));
+  pdfjs.GlobalWorkerOptions.workerSrc = String(
+    options.pdfWorker ?? new URL("../../pdf.worker.min.mjs", import.meta.url),
+  );
   const task = pdfjs.getDocument({
     data: bytes.slice(),
     enableXfa: false,
@@ -27,7 +29,10 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
   const pdf = await task.promise;
   if (pdf.numPages > MAX_PAGES) {
     await task.destroy();
-    throw new DocumentError(`This PDF has ${pdf.numPages.toLocaleString()} pages, more than the ${MAX_PAGES.toLocaleString()} the viewer shows.`, { code: "resourceLimit", format: "pdf" });
+    throw new DocumentError(
+      `This PDF has ${pdf.numPages.toLocaleString()} pages, more than the ${MAX_PAGES.toLocaleString()} the viewer shows.`,
+      { code: "resourceLimit", format: "pdf" },
+    );
   }
   const doc = element.ownerDocument;
   const container = doc.createElement("div");
@@ -66,7 +71,9 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
       // Release the farthest drawn pages so memory stays bounded however long the PDF is.
       if (live.size > LIVE_PAGES) {
         const center = currentPage();
-        const far = [...live].sort((a, b) => Math.abs(b.index - center) - Math.abs(a.index - center));
+        const far = [...live].sort(
+          (a, b) => Math.abs(b.index - center) - Math.abs(a.index - center),
+        );
         for (const page of far.slice(0, live.size - LIVE_PAGES)) {
           page.release();
           live.delete(page);
@@ -132,7 +139,11 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
           canvas.height = Math.floor(viewport.height * ratio);
           canvas.style.cssText = `display:block;width:${viewport.width}px;height:${viewport.height}px;background:#fff`;
           target.replaceChildren(canvas);
-          task = page.render({ canvas, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] });
+          task = page.render({
+            canvas,
+            viewport,
+            transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
+          });
           task.promise.catch(() => undefined);
         });
         return () => {
@@ -219,7 +230,11 @@ class PageView {
     canvas.width = Math.floor(viewport.width * ratio);
     canvas.height = Math.floor(viewport.height * ratio);
     canvas.style.cssText = "display:block;width:100%;height:100%";
-    const task = page.render({ canvas, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] });
+    const task = page.render({
+      canvas,
+      viewport,
+      transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
+    });
     this.#task = task;
     try {
       await task.promise;
@@ -231,7 +246,11 @@ class PageView {
     const text = this.doc.createElement("div");
     text.className = "textLayer";
     text.style.setProperty("--total-scale-factor", String(scale));
-    const layer = new TextLayer({ container: text, textContentSource: page.streamTextContent(), viewport });
+    const layer = new TextLayer({
+      container: text,
+      textContentSource: page.streamTextContent(),
+      viewport,
+    });
     this.#textLayer = layer;
     await layer.render().catch(() => undefined);
     if (this.#drawn !== scale) return;
@@ -241,7 +260,10 @@ class PageView {
   }
 
   /** The page's link annotations as plain anchors over the canvas. */
-  async links(page: PDFPageProxy, viewport: ReturnType<PDFPageProxy["getViewport"]>): Promise<DocumentFragment> {
+  async links(
+    page: PDFPageProxy,
+    viewport: ReturnType<PDFPageProxy["getViewport"]>,
+  ): Promise<DocumentFragment> {
     const fragment = this.doc.createDocumentFragment();
     for (const annotation of await page.getAnnotations({ intent: "display" })) {
       if (annotation.subtype !== "Link" || typeof annotation.url !== "string") continue;
@@ -296,11 +318,15 @@ function pdfSearch(pdf: PDFDocumentProxy, pages: readonly PageView[]): Searchabl
     rangesByPage.delete(index);
     const layer = pages[index]?.text;
     if (!layer) return;
-    const ranges = matches.filter((m) => m.page === index).map((m) => rangeAt(layer, m.start, m.length)).filter((r): r is Range => r !== undefined);
+    const ranges = matches
+      .filter((m) => m.page === index)
+      .map((m) => rangeAt(layer, m.start, m.length))
+      .filter((r): r is Range => r !== undefined);
     for (const range of ranges) all.add(range);
     rangesByPage.set(index, ranges);
   };
-  for (const page of pages) page.root.addEventListener("documents-drawn", () => markPage(page.index));
+  for (const page of pages)
+    page.root.addEventListener("documents-drawn", () => markPage(page.index));
   const showCurrent = (match: (typeof matches)[number]) => {
     const layer = pages[match.page]?.text;
     const range = layer && rangeAt(layer, match.start, match.length);
@@ -319,7 +345,11 @@ function pdfSearch(pdf: PDFDocumentProxy, pages: readonly PageView[]): Searchabl
         signal.throwIfAborted();
         const text = (await pageText(index)).toLocaleLowerCase();
         const before = matches.length;
-        for (let at = text.indexOf(needle); at >= 0; at = text.indexOf(needle, at + needle.length)) {
+        for (
+          let at = text.indexOf(needle);
+          at >= 0;
+          at = text.indexOf(needle, at + needle.length)
+        ) {
           matches.push({ page: index, start: at, length: needle.length });
         }
         if (matches.length > before) markPage(index);

@@ -19,14 +19,14 @@
     <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
     <style>
       @font-face {
-        font-family: 'Geist Mono';
-        src: url('assets/fonts/GeistMono-400.woff2') format('woff2');
+        font-family: "Geist Mono";
+        src: url("assets/fonts/GeistMono-400.woff2") format("woff2");
         font-weight: 400;
         font-display: swap;
       }
       @font-face {
-        font-family: 'Geist Mono';
-        src: url('assets/fonts/GeistMono-500.woff2') format('woff2');
+        font-family: "Geist Mono";
+        src: url("assets/fonts/GeistMono-500.woff2") format("woff2");
         font-weight: 500;
         font-display: swap;
       }
@@ -44,10 +44,8 @@
         --border-muted: #e8e8e8;
         --border-loud: #e6e6e6;
         --error: #eb3424;
-        --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-        --mono:
-          'Geist Mono', ui-monospace, 'Cascadia Code', Menlo, Consolas,
-          monospace;
+        --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+        --mono: "Geist Mono", ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
       }
       @media (prefers-color-scheme: dark) {
         :root {
@@ -398,7 +396,7 @@
         display: inline-flex;
         gap: 4px;
       }
-      .tabs button[aria-selected='true'] {
+      .tabs button[aria-selected="true"] {
         border-color: var(--heat);
         color: var(--heat);
       }
@@ -472,7 +470,7 @@
         font: 11px var(--mono);
         color: var(--text-muted);
       }
-      .thumbs button[aria-current='page'] {
+      .thumbs button[aria-current="page"] {
         border-color: var(--heat);
       }
       .thumbs .thumb {
@@ -629,25 +627,16 @@
           aria-label="anydoc by Firecrawl"
         >
           <picture>
-            <source
-              srcset="assets/logo-light.svg"
-              media="(prefers-color-scheme: dark)"
-            />
+            <source srcset="assets/logo-light.svg" media="(prefers-color-scheme: dark)" />
             <img src="assets/logo.svg" alt="" width="15" height="22" />
           </picture>
-          <span class="wordmark"
-            >anydoc <span class="by">by Firecrawl</span></span
-          >
+          <span class="wordmark">anydoc <span class="by">by Firecrawl</span></span>
         </a>
         <nav>
           <a href="https://github.com/firecrawl/anydoc">GitHub</a>
-          <a class="pkg" href="https://www.npmjs.com/package/@firecrawl/anydoc"
-            >npm</a
-          >
+          <a class="pkg" href="https://www.npmjs.com/package/@firecrawl/anydoc">npm</a>
           <a class="pkg" href="https://crates.io/crates/anydoc">crates.io</a>
-          <a class="pkg" href="https://pypi.org/project/firecrawl-anydoc/"
-            >PyPI</a
-          >
+          <a class="pkg" href="https://pypi.org/project/firecrawl-anydoc/">PyPI</a>
         </nav>
       </header>
 
@@ -658,43 +647,72 @@
         </svg>
         <svg class="junction top" aria-hidden="true">
           <line x1="0" y1="10.5" x2="100%" y2="10.5" />
-          <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="rotate(180 5.5 5.5)" />
-          <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="translate(0 10) rotate(-90 5.5 5.5)" />
+          <path
+            d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+            fill="currentColor"
+            transform="rotate(180 5.5 5.5)"
+          />
+          <path
+            d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+            fill="currentColor"
+            transform="translate(0 10) rotate(-90 5.5 5.5)"
+          />
           <svg x="100%" overflow="visible">
-            <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="translate(-11 0) rotate(90 5.5 5.5)" />
-            <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="translate(-11 10)" />
+            <path
+              d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+              fill="currentColor"
+              transform="translate(-11 0) rotate(90 5.5 5.5)"
+            />
+            <path
+              d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+              fill="currentColor"
+              transform="translate(-11 10)"
+            />
           </svg>
         </svg>
         <svg class="junction bottom" aria-hidden="true">
           <line x1="0" y1="10.5" x2="100%" y2="10.5" />
-          <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="rotate(180 5.5 5.5)" />
-          <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="translate(0 10) rotate(-90 5.5 5.5)" />
+          <path
+            d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+            fill="currentColor"
+            transform="rotate(180 5.5 5.5)"
+          />
+          <path
+            d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+            fill="currentColor"
+            transform="translate(0 10) rotate(-90 5.5 5.5)"
+          />
           <svg x="100%" overflow="visible">
-            <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="translate(-11 0) rotate(90 5.5 5.5)" />
-            <path d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z" fill="currentColor" transform="translate(-11 10)" />
+            <path
+              d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+              fill="currentColor"
+              transform="translate(-11 0) rotate(90 5.5 5.5)"
+            />
+            <path
+              d="M4 0H11V7H10C10 3.68629 7.31371 1 4 1V0Z"
+              fill="currentColor"
+              transform="translate(-11 10)"
+            />
           </svg>
         </svg>
 
         <section class="band">
           <h1>Any file in.<br /><span class="heat">Markdown and a viewer out.</span></h1>
           <p class="lede">
-            One package that reads PDF, Word, PowerPoint, Excel, OpenDocument,
-            EPUB, images, media and more into GitHub-Flavored Markdown, and
-            renders every one of them in your app. The controls are yours to
-            draw. It all runs here in your browser:
+            One package that reads PDF, Word, PowerPoint, Excel, OpenDocument, EPUB, images, media
+            and more into GitHub-Flavored Markdown, and renders every one of them in your app. The
+            controls are yours to draw. It all runs here in your browser:
             <strong>files never leave your machine</strong>.
           </p>
           <ul class="badges">
             <li>
               <a href="https://www.npmjs.com/package/@glass-hq/documents">
-                <span class="key">npm</span
-                ><span class="value">@glass-hq/documents</span>
+                <span class="key">npm</span><span class="value">@glass-hq/documents</span>
               </a>
             </li>
             <li>
               <a href="https://github.com/Glass-HQ/documents">
-                <span class="key">GitHub</span
-                ><span class="value">Glass-HQ/documents</span>
+                <span class="key">GitHub</span><span class="value">Glass-HQ/documents</span>
               </a>
             </li>
             <li>
@@ -707,12 +725,8 @@
 
         <section class="band">
           <button class="drop" id="drop" aria-describedby="drop-hint">
-            <span class="big" id="drop-title"
-              >Loading the converter&hellip;</span
-            >
-            <span class="small" id="drop-hint"
-              >about 650 KB of WebAssembly, downloaded once</span
-            >
+            <span class="big" id="drop-title">Loading the converter&hellip;</span>
+            <span class="small" id="drop-hint">about 650 KB of WebAssembly, downloaded once</span>
           </button>
           <input type="file" id="file" hidden />
           <p class="samples">
@@ -758,60 +772,53 @@
             <dt>One model</dt>
             <dd>
               <strong>Every format parses into the same document model</strong>
-              and renders through the same Markdown serializer, so headings,
-              nested lists, merged table cells, and footnotes come out the same
-              from a .doc written in 2003 as from yesterday's .pptx.
+              and renders through the same Markdown serializer, so headings, nested lists, merged
+              table cells, and footnotes come out the same from a .doc written in 2003 as from
+              yesterday's .pptx.
             </dd>
 
             <dt>Rendering</dt>
             <dd>
-              Every format that parses also renders: PDF through pdf.js, Word
-              and PowerPoint as laid-out pages, every spreadsheet format in one
-              virtualized grid with its styles and charts, and the rest from the
-              document model. Files are untrusted: nothing in them runs or
-              reaches the network.
+              Every format that parses also renders: PDF through pdf.js, Word and PowerPoint as
+              laid-out pages, every spreadsheet format in one virtualized grid with its styles and
+              charts, and the rest from the document model. Files are untrusted: nothing in them
+              runs or reaches the network.
             </dd>
 
             <dt>Headless</dt>
             <dd>
-              The viewer draws the document and nothing else. Pages, zoom,
-              search and sheets come out as state and actions, so the controls
-              above are this page's own: about forty lines of script.
+              The viewer draws the document and nothing else. Pages, zoom, search and sheets come
+              out as state and actions, so the controls above are this page's own: about forty lines
+              of script.
             </dd>
 
             <dt>Detection</dt>
             <dd>
-              The format is read from the bytes, not the extension, so
-              mislabeled files still convert.
+              The format is read from the bytes, not the extension, so mislabeled files still
+              convert.
             </dd>
 
             <dt>Speed</dt>
             <dd>
-              Pure Rust, no ML models, no services: median conversion is under
-              5&nbsp;ms. Of seven converters
-              <a href="https://github.com/firecrawl/anydoc#benchmark"
-                >benchmarked</a
-              >
-              on 100 documents, anydoc was the only one to handle all fourteen
-              formats.
+              Pure Rust, no ML models, no services: median conversion is under 5&nbsp;ms. Of seven
+              converters
+              <a href="https://github.com/firecrawl/anydoc#benchmark">benchmarked</a>
+              on 100 documents, anydoc was the only one to handle all fourteen formats.
             </dd>
 
             <dt>PDF</dt>
             <dd>
               Text-based PDFs convert locally through
-              <a href="https://github.com/firecrawl/pdf-inspector"
-                >pdf-inspector</a
-              >. Scanned pages need OCR, which
-              <a href="https://firecrawl.dev/parse">Firecrawl Parse</a> adds on
-              top of this same conversion.
+              <a href="https://github.com/firecrawl/pdf-inspector">pdf-inspector</a>. Scanned pages
+              need OCR, which <a href="https://firecrawl.dev/parse">Firecrawl Parse</a> adds on top
+              of this same conversion.
             </dd>
 
             <dt>This page</dt>
             <dd>
               Everything above is
-              <a href="https://www.npmjs.com/package/@glass-hq/documents"
-                >@glass-hq/documents</a
-              >. Drop it into your own app the same way.
+              <a href="https://www.npmjs.com/package/@glass-hq/documents">@glass-hq/documents</a>.
+              Drop it into your own app the same way.
             </dd>
           </dl>
         </section>

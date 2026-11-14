@@ -13,7 +13,7 @@ npm install @glass-hq/documents
 ## Markdown
 
 ```js
-import { toMarkdown } from '@glass-hq/documents';
+import { toMarkdown } from "@glass-hq/documents";
 
 const markdown = await toMarkdown(file); // a File, Blob, bytes, URL or stream
 ```
@@ -23,7 +23,7 @@ The format is detected from the bytes; a name or media type only decides for fil
 ## Rendering
 
 ```js
-import { createViewer } from '@glass-hq/documents';
+import { createViewer } from "@glass-hq/documents";
 
 const viewer = createViewer(element, file, { onLink: (url) => window.open(url) });
 ```
@@ -41,7 +41,7 @@ viewer.subscribe(() => {
 
 viewer.nextPage();
 viewer.zoomIn();
-viewer.search('revenue');
+viewer.search("revenue");
 viewer.nextMatch();
 viewer.selectSheet(1);
 const release = viewer.renderThumbnail(3, thumbnailElement, 120); // page or slide 3, for a rail
@@ -55,7 +55,7 @@ A part of the state is absent when the document has no such thing (a video has n
 ### React
 
 ```tsx
-import { useDocumentViewer } from '@glass-hq/documents/react';
+import { useDocumentViewer } from "@glass-hq/documents/react";
 
 function Viewer({ file }: { file: File }) {
   const { ref, state, viewer } = useDocumentViewer(file);
@@ -81,14 +81,14 @@ function Viewer({ file }: { file: File }) {
 
 The viewer's styles sit in a `documents` cascade layer, so any style of yours wins. These custom properties on the element cover the common cases:
 
-| Property                              | What it sets                                   |
-| ------------------------------------- | ---------------------------------------------- |
-| `--documents-background`              | Behind the pages                               |
-| `--documents-page-background`         | The paper of PDF, Word and slide pages         |
-| `--documents-page-shadow`             | Around each page                               |
-| `--documents-gap`, `--documents-padding` | Space between and around pages              |
-| `--documents-match`, `--documents-match-current` | Search highlights                   |
-| `--documents-font`, `--documents-mono` | Text in reading views, and text and code      |
+| Property                                         | What it sets                             |
+| ------------------------------------------------ | ---------------------------------------- |
+| `--documents-background`                         | Behind the pages                         |
+| `--documents-page-background`                    | The paper of PDF, Word and slide pages   |
+| `--documents-page-shadow`                        | Around each page                         |
+| `--documents-gap`, `--documents-padding`         | Space between and around pages           |
+| `--documents-match`, `--documents-match-current` | Search highlights                        |
+| `--documents-font`, `--documents-mono`           | Text in reading views, and text and code |
 
 The document itself keeps the colors and fonts its file gives it.
 
@@ -99,31 +99,33 @@ Every file is treated as hostile. Nothing in a document runs, and nothing loads 
 ## Formats
 
 <!-- formats:start -->
-| Format | Extensions | Markdown | Rendered as |
-| --- | --- | --- | --- |
-| PDF | `.pdf` | Converted | Pages, through pdf.js |
-| Word | `.docx`, `.docm`, `.dotx`, `.dotm` | Converted | Pages, through docx-preview |
-| Word 97-2003 | `.doc`, `.dot` | Converted | Reading view, from the document model |
-| OpenDocument Text | `.odt`, `.ott` | Converted | Reading view, from the document model |
-| Rich Text | `.rtf` | Converted | Reading view, from the document model |
-| EPUB | `.epub` | Converted | Reading view, from the document model |
-| PowerPoint | `.pptx`, `.pptm`, `.ppsx`, `.ppsm`, `.potx`, `.potm` | Converted | Slides, through pptx-renderer |
-| PowerPoint 97-2003 | `.ppt`, `.pps`, `.pot` | Converted | Reading view, from the document model |
-| OpenDocument Presentation | `.odp`, `.otp` | Converted | Reading view, from the document model |
-| Excel | `.xlsx`, `.xlsm`, `.xltx`, `.xltm` | Converted | Spreadsheet grid, with the styles, merges and charts the file has |
-| Excel Binary | `.xlsb` | Converted | Spreadsheet grid, with the styles, merges and charts the file has |
-| Excel 97-2003 | `.xls`, `.xlt` | Converted | Spreadsheet grid, with the styles, merges and charts the file has |
-| OpenDocument Spreadsheet | `.ods`, `.ots` | Converted | Spreadsheet grid, with the styles, merges and charts the file has |
-| CSV | `.csv` | Converted | Spreadsheet grid, with the styles, merges and charts the file has |
-| TSV | `.tsv`, `.tab` | Converted | Spreadsheet grid, with the styles, merges and charts the file has |
-| Markdown | `.md`, `.markdown`, `.mdown`, `.mkd` | As written | Formatted, as GitHub renders it |
-| Text | `.txt`, `.text`, `.log` | As written | Text, or your highlighter |
-| Image | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.avif`, `.bmp`, `.ico`, `.heic`, `.heif` | A line describing the file | The image |
-| SVG | `.svg` | A line describing the file | The image |
-| Video | `.mp4`, `.m4v`, `.mov`, `.webm`, `.ogv`, `.mkv` | A line describing the file | The browser's video player |
-| Audio | `.mp3`, `.wav`, `.ogg`, `.oga`, `.opus`, `.m4a`, `.aac`, `.flac`, `.weba` | A line describing the file | The browser's audio player |
-| Font | `.ttf`, `.otf`, `.woff`, `.woff2` | A line describing the file | A sample sheet |
-| File | anything else | A line describing the file | Text, or its first bytes |
+
+| Format                    | Extensions                                                                          | Markdown                   | Rendered as                                                       |
+| ------------------------- | ----------------------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------- |
+| PDF                       | `.pdf`                                                                              | Converted                  | Pages, through pdf.js                                             |
+| Word                      | `.docx`, `.docm`, `.dotx`, `.dotm`                                                  | Converted                  | Pages, through docx-preview                                       |
+| Word 97-2003              | `.doc`, `.dot`                                                                      | Converted                  | Reading view, from the document model                             |
+| OpenDocument Text         | `.odt`, `.ott`                                                                      | Converted                  | Reading view, from the document model                             |
+| Rich Text                 | `.rtf`                                                                              | Converted                  | Reading view, from the document model                             |
+| EPUB                      | `.epub`                                                                             | Converted                  | Reading view, from the document model                             |
+| PowerPoint                | `.pptx`, `.pptm`, `.ppsx`, `.ppsm`, `.potx`, `.potm`                                | Converted                  | Slides, through pptx-renderer                                     |
+| PowerPoint 97-2003        | `.ppt`, `.pps`, `.pot`                                                              | Converted                  | Reading view, from the document model                             |
+| OpenDocument Presentation | `.odp`, `.otp`                                                                      | Converted                  | Reading view, from the document model                             |
+| Excel                     | `.xlsx`, `.xlsm`, `.xltx`, `.xltm`                                                  | Converted                  | Spreadsheet grid, with the styles, merges and charts the file has |
+| Excel Binary              | `.xlsb`                                                                             | Converted                  | Spreadsheet grid, with the styles, merges and charts the file has |
+| Excel 97-2003             | `.xls`, `.xlt`                                                                      | Converted                  | Spreadsheet grid, with the styles, merges and charts the file has |
+| OpenDocument Spreadsheet  | `.ods`, `.ots`                                                                      | Converted                  | Spreadsheet grid, with the styles, merges and charts the file has |
+| CSV                       | `.csv`                                                                              | Converted                  | Spreadsheet grid, with the styles, merges and charts the file has |
+| TSV                       | `.tsv`, `.tab`                                                                      | Converted                  | Spreadsheet grid, with the styles, merges and charts the file has |
+| Markdown                  | `.md`, `.markdown`, `.mdown`, `.mkd`                                                | As written                 | Formatted, as GitHub renders it                                   |
+| Text                      | `.txt`, `.text`, `.log`                                                             | As written                 | Text, or your highlighter                                         |
+| Image                     | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.avif`, `.bmp`, `.ico`, `.heic`, `.heif` | A line describing the file | The image                                                         |
+| SVG                       | `.svg`                                                                              | A line describing the file | The image                                                         |
+| Video                     | `.mp4`, `.m4v`, `.mov`, `.webm`, `.ogv`, `.mkv`                                     | A line describing the file | The browser's video player                                        |
+| Audio                     | `.mp3`, `.wav`, `.ogg`, `.oga`, `.opus`, `.m4a`, `.aac`, `.flac`, `.weba`           | A line describing the file | The browser's audio player                                        |
+| Font                      | `.ttf`, `.otf`, `.woff`, `.woff2`                                                   | A line describing the file | A sample sheet                                                    |
+| File                      | anything else                                                                       | A line describing the file | Text, or its first bytes                                          |
+
 <!-- formats:end -->
 
 PDF to Markdown needs text: scanned pages are reported as `needsOcr`. They still render.
@@ -216,7 +218,7 @@ npm install @firecrawl/anydoc-wasm
 ```
 
 ```js
-import init, { toMarkdownBytes, toDocument } from '@firecrawl/anydoc-wasm';
+import init, { toMarkdownBytes, toDocument } from "@firecrawl/anydoc-wasm";
 
 await init();
 
@@ -224,7 +226,7 @@ await init();
 const markdown = toMarkdownBytes(bytes);
 
 // Or name it, which signature-less formats (CSV) need:
-const fromCsv = toMarkdownBytes(bytes, 'csv');
+const fromCsv = toMarkdownBytes(bytes, "csv");
 
 // Or stop at the document model, which also carries embedded assets:
 const document = toDocument(bytes);
@@ -359,15 +361,15 @@ match anydoc::to_markdown(path) {
 }
 ```
 
-| Variant         | Meaning                                                             |
-| --------------- | ------------------------------------------------------------------- |
-| `Unsupported`   | Unknown format, or one that cannot be converted                     |
-| `NeedsOcr`      | Scanned or image-only pages of a PDF, listed in `pages`             |
-| `Malformed`     | Structurally unusable: no meaningful content could be extracted     |
-| `Encrypted`     | Encrypted or password-protected                                     |
-| `ResourceLimit` | Crossed a fixed safety limit (decompression, nesting, node count)   |
-| `MissingPart`   | A part required for any meaningful output is absent                 |
-| `Io`            | The file could not be read, from `to_markdown` only                 |
+| Variant         | Meaning                                                           |
+| --------------- | ----------------------------------------------------------------- |
+| `Unsupported`   | Unknown format, or one that cannot be converted                   |
+| `NeedsOcr`      | Scanned or image-only pages of a PDF, listed in `pages`           |
+| `Malformed`     | Structurally unusable: no meaningful content could be extracted   |
+| `Encrypted`     | Encrypted or password-protected                                   |
+| `ResourceLimit` | Crossed a fixed safety limit (decompression, nesting, node count) |
+| `MissingPart`   | A part required for any meaningful output is absent               |
+| `Io`            | The file could not be read, from `to_markdown` only               |
 
 Node and wasm publish the variant name on `error.code`; Python raises one `anydoc.ConvertError` subclass per variant, or `OSError` when the file cannot be read.
 

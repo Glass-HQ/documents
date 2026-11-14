@@ -5,14 +5,19 @@ const allowed = /^(?:https?:|mailto:)/iu;
  * mailto link goes to `onLink`, a click on a `#fragment` scrolls to it, and
  * everything else does nothing.
  */
-export function followLinks(root: HTMLElement, onLink: ((url: string) => void) | undefined): () => void {
+export function followLinks(
+  root: HTMLElement,
+  onLink: ((url: string) => void) | undefined,
+): () => void {
   const click = (event: MouseEvent) => {
     const anchor = (event.target as Element | null)?.closest?.("a[href]");
     if (!anchor || !root.contains(anchor)) return;
     event.preventDefault();
     const href = anchor.getAttribute("href") ?? "";
     if (href.startsWith("#")) {
-      root.querySelector(`[id="${CSS.escape(decodeURIComponent(href.slice(1)))}"]`)?.scrollIntoView({ block: "start" });
+      root
+        .querySelector(`[id="${CSS.escape(decodeURIComponent(href.slice(1)))}"]`)
+        ?.scrollIntoView({ block: "start" });
       return;
     }
     if (allowed.test(href.trim())) onLink?.(href.trim());

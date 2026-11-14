@@ -1,4 +1,11 @@
-import { toDocument, type Block, type CoreDocument, type Inline, type List, type Table } from "../../core/parse.js";
+import {
+  toDocument,
+  type Block,
+  type CoreDocument,
+  type Inline,
+  type List,
+  type Table,
+} from "../../core/parse.js";
 import { domSearch } from "../dom-search.js";
 import { followLinks, isAllowedLink } from "../links.js";
 import type { RenderFunction } from "../renderer.js";
@@ -110,7 +117,16 @@ class DocumentBuilder {
     const node = this.el(ordered ? "ol" : "ul");
     if (node instanceof HTMLOListElement) {
       node.start = list.start;
-      node.type = ({ decimal: "1", lowerAlpha: "a", upperAlpha: "A", lowerRoman: "i", upperRoman: "I", bullet: "1" } as const)[list.marker];
+      node.type = (
+        {
+          decimal: "1",
+          lowerAlpha: "a",
+          upperAlpha: "A",
+          lowerRoman: "i",
+          upperRoman: "I",
+          bullet: "1",
+        } as const
+      )[list.marker];
     }
     for (const item of list.items) {
       const li = this.el("li");
@@ -167,7 +183,8 @@ class DocumentBuilder {
       }
       case "image": {
         const source = inline.source;
-        if (source?.kind !== "asset" || source.assetId === undefined) return this.doc.createTextNode(inline.alt ? `[${inline.alt}]` : "");
+        if (source?.kind !== "asset" || source.assetId === undefined)
+          return this.doc.createTextNode(inline.alt ? `[${inline.alt}]` : "");
         const img = this.el("img");
         img.alt = inline.alt ?? "";
         img.decoding = "async";

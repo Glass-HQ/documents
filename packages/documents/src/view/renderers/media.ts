@@ -6,7 +6,8 @@ import { cssZoom } from "../zoom.js";
 function mediaElement(context: RenderContext, tag: "img" | "video" | "audio"): Renderer {
   const { element, bytes, name } = context;
   const owned = context.url === undefined;
-  const url = context.url ?? URL.createObjectURL(new Blob([bytes as BlobPart], { type: mediaType(context) }));
+  const url =
+    context.url ?? URL.createObjectURL(new Blob([bytes as BlobPart], { type: mediaType(context) }));
   const wrapper = element.ownerDocument.createElement("div");
   wrapper.className = "documents-center";
   const media = element.ownerDocument.createElement(tag);
@@ -41,7 +42,12 @@ function mediaType({ format, name }: RenderContext): string {
   const extension = name?.split(".").at(-1)?.toLowerCase();
   const types: readonly string[] = formats[format].mediaTypes;
   if (format === "svg") return "image/svg+xml";
-  return types.find((type) => extension !== undefined && type.endsWith(`/${extension === "jpg" ? "jpeg" : extension}`)) ?? "";
+  return (
+    types.find(
+      (type) =>
+        extension !== undefined && type.endsWith(`/${extension === "jpg" ? "jpeg" : extension}`),
+    ) ?? ""
+  );
 }
 
 export const renderImage: RenderFunction = async (context) => mediaElement(context, "img");

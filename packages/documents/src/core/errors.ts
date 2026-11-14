@@ -21,7 +21,14 @@ export type DocumentErrorCode =
   /** A renderer failed on a file it accepted. */
   | "renderFailed";
 
-const coreCodes = new Set<string>(["unsupported", "needsOcr", "malformed", "encrypted", "resourceLimit", "missingPart"]);
+const coreCodes = new Set<string>([
+  "unsupported",
+  "needsOcr",
+  "malformed",
+  "encrypted",
+  "resourceLimit",
+  "missingPart",
+]);
 
 export interface DocumentErrorDetails {
   readonly code: DocumentErrorCode;
@@ -50,18 +57,41 @@ export class DocumentError extends Error {
   /** Any thrown value as a DocumentError. Core and abort errors keep their code; the rest get `fallback`. */
   static from(
     cause: unknown,
-    fallback: { readonly code: DocumentErrorCode; readonly message: string; readonly format?: DocumentFormat | undefined },
+    fallback: {
+      readonly code: DocumentErrorCode;
+      readonly message: string;
+      readonly format?: DocumentFormat | undefined;
+    },
   ): DocumentError {
     if (cause instanceof DocumentError) return cause;
     const format = fallback.format;
-    if (isAbort(cause)) return new DocumentError("Reading the document was cancelled.", { code: "aborted", format, cause });
-    if (cause instanceof Error && "code" in cause && typeof cause.code === "string" && coreCodes.has(cause.code)) {
-      const pages = "pages" in cause && Array.isArray(cause.pages) ? (cause.pages as number[]) : undefined;
-      return new DocumentError(cause.message, { code: cause.code as DocumentErrorCode, format, pages, cause });
+    if (isAbort(cause))
+      return new DocumentError("Reading the document was cancelled.", {
+        code: "aborted",
+        format,
+        cause,
+      });
+    if (
+      cause instanceof Error &&
+      "code" in cause &&
+      typeof cause.code === "string" &&
+      coreCodes.has(cause.code)
+    ) {
+      const pages =
+        "pages" in cause && Array.isArray(cause.pages) ? (cause.pages as number[]) : undefined;
+      return new DocumentError(cause.message, {
+        code: cause.code as DocumentErrorCode,
+        format,
+        pages,
+        cause,
+      });
     }
     return new DocumentError(fallback.message, { code: fallback.code, format, cause });
   }
 }
 
 const isAbort = (cause: unknown) =>
-  typeof cause === "object" && cause !== null && "name" in cause && (cause.name === "AbortError" || cause.name === "TimeoutError");
+  typeof cause === "object" &&
+  cause !== null &&
+  "name" in cause &&
+  (cause.name === "AbortError" || cause.name === "TimeoutError");

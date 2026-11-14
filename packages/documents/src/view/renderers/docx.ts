@@ -36,14 +36,21 @@ export const render: RenderFunction = async ({ element, bytes, signal, options }
   mapSymbolFonts(rendered);
   const pages = doc.createElement("div");
   pages.className = "documents-pages documents-docx-pages";
-  for (const section of rendered.querySelectorAll<HTMLElement>("section.documents-docx")) section.classList.add("documents-page");
+  for (const section of rendered.querySelectorAll<HTMLElement>("section.documents-docx"))
+    section.classList.add("documents-page");
   pages.append(rendered);
   const stopLinks = followLinks(pages, options.onLink);
   element.replaceChildren(pages);
   // Numbers are written once the pages are in the document, where their styles apply.
-  numberLists(pages, (parsed as unknown as { numberingPart?: Parameters<typeof numberLists>[1] }).numberingPart);
+  numberLists(
+    pages,
+    (parsed as unknown as { numberingPart?: Parameters<typeof numberLists>[1] }).numberingPart,
+  );
   // Pages are a fixed paper width: 100% is the width that fits the viewer, never wider than the paper.
-  const paper = Math.max(1, ...[...pages.querySelectorAll<HTMLElement>(".documents-page")].map((page) => page.offsetWidth));
+  const paper = Math.max(
+    1,
+    ...[...pages.querySelectorAll<HTMLElement>(".documents-page")].map((page) => page.offsetWidth),
+  );
   const fit = () => Math.min(1, (element.clientWidth - 48) / paper);
   let zoom = 1;
   const apply = () => {
@@ -53,13 +60,21 @@ export const render: RenderFunction = async ({ element, bytes, signal, options }
   const resize = new ResizeObserver(apply);
   resize.observe(element);
   return {
-    zoom: { min: 0.25, max: 5, apply: (value: number) => { zoom = value; apply(); } },
+    zoom: {
+      min: 0.25,
+      max: 5,
+      apply: (value: number) => {
+        zoom = value;
+        apply();
+      },
+    },
     search: domSearch(() => pages),
     destroy: () => {
       resize.disconnect();
       stopLinks();
       // docx-preview made blob URLs for the images it drew.
-      for (const image of pages.querySelectorAll<HTMLImageElement>("img[src^='blob:']")) URL.revokeObjectURL(image.src);
+      for (const image of pages.querySelectorAll<HTMLImageElement>("img[src^='blob:']"))
+        URL.revokeObjectURL(image.src);
       element.replaceChildren();
     },
   };

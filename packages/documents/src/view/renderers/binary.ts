@@ -15,8 +15,12 @@ export const render: RenderFunction = async (context) => {
   const head = bytes.subarray(0, shown);
   for (let offset = 0; offset < head.length; offset += 16) {
     const row = head.subarray(offset, offset + 16);
-    const printable = Array.from(row, (b) => (b >= 0x20 && b < 0x7f ? String.fromCharCode(b) : ".")).join("");
-    rows.push(`${offset.toString(16).padStart(8, "0")}  ${Array.from(row, hex).join(" ").padEnd(47)}  ${printable}`);
+    const printable = Array.from(row, (b) =>
+      b >= 0x20 && b < 0x7f ? String.fromCharCode(b) : ".",
+    ).join("");
+    rows.push(
+      `${offset.toString(16).padStart(8, "0")}  ${Array.from(row, hex).join(" ").padEnd(47)}  ${printable}`,
+    );
   }
   const note = element.ownerDocument.createElement("p");
   note.className = "documents-message";

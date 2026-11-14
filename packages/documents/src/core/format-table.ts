@@ -16,14 +16,24 @@ const renderers: Record<FormatInfo["render"], string> = {
 };
 
 const markdown = (info: FormatInfo) =>
-  info.parse.kind === "core" ? "Converted" : info.parse.kind === "text" ? "As written" : "A line describing the file";
+  info.parse.kind === "core"
+    ? "Converted"
+    : info.parse.kind === "text"
+      ? "As written"
+      : "A line describing the file";
 
 /** The README's format table, made from the registry so the two can't disagree. */
 export function formatTable(): string {
   const rows = formatNames.map((name) => {
     const info: FormatInfo = formats[name];
-    const extensions = info.extensions.length ? info.extensions.map((e) => `\`.${e}\``).join(", ") : "anything else";
+    const extensions = info.extensions.length
+      ? info.extensions.map((e) => `\`.${e}\``).join(", ")
+      : "anything else";
     return `| ${info.label} | ${extensions} | ${markdown(info)} | ${renderers[info.render]} |`;
   });
-  return ["| Format | Extensions | Markdown | Rendered as |", "| --- | --- | --- | --- |", ...rows].join("\n");
+  return [
+    "| Format | Extensions | Markdown | Rendered as |",
+    "| --- | --- | --- | --- |",
+    ...rows,
+  ].join("\n");
 }

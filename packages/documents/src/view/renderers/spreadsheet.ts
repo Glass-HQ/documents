@@ -1,4 +1,12 @@
-import { toWorkbook, type CellStyle, type Drawing, type Region, type Sheet, type SheetCell, type Workbook } from "../../core/parse.js";
+import {
+  toWorkbook,
+  type CellStyle,
+  type Drawing,
+  type Region,
+  type Sheet,
+  type SheetCell,
+  type Workbook,
+} from "../../core/parse.js";
 import type { RenderFunction, Searchable } from "../renderer.js";
 import { chartSvg } from "./chart.js";
 
@@ -16,9 +24,30 @@ const OVERSCAN = 4;
  * never lag behind a fast scroll. Values come from the core, already shown
  * through their number formats.
  */
-export const render: RenderFunction = async ({ element, bytes, format, name, signal, options, onPosition }) => {
+export const render: RenderFunction = async ({
+  element,
+  bytes,
+  format,
+  name,
+  signal,
+  options,
+  onPosition,
+}) => {
   const workbook = await toWorkbook({ bytes, format, name }, { signal });
-  if (workbook.sheets.length === 0) workbook.sheets.push({ name: "Sheet1", cells: [], merges: [], columns: { sizes: [], hidden: [] }, rows: { sizes: [], hidden: [] }, frozenRows: 0, frozenColumns: 0, gridLines: true, drawings: [], validations: [], tables: [] });
+  if (workbook.sheets.length === 0)
+    workbook.sheets.push({
+      name: "Sheet1",
+      cells: [],
+      merges: [],
+      columns: { sizes: [], hidden: [] },
+      rows: { sizes: [], hidden: [] },
+      frozenRows: 0,
+      frozenColumns: 0,
+      gridLines: true,
+      drawings: [],
+      validations: [],
+      tables: [],
+    });
   const grid = new Grid(element, workbook, options.onLink);
   grid.show(0);
   return {
@@ -107,10 +136,22 @@ function layout(sheet: Sheet): SheetLayout {
   const columnSizes = new Map(sheet.columns.sizes);
   const hiddenRows = new Set(sheet.rows.hidden);
   const hiddenColumns = new Set(sheet.columns.hidden);
-  const defaultRow = sheet.rows.defaultSize === undefined ? DEFAULT_ROW : pointPixels(sheet.rows.defaultSize);
-  const defaultColumn = sheet.columns.defaultSize === undefined ? DEFAULT_COLUMN : columnPixels(sheet.columns.defaultSize);
-  const rows = new AxisLayout(Math.max(MIN_ROWS, lastRow + 20), (i) => (hiddenRows.has(i) ? 0 : rowSizes.has(i) ? pointPixels(rowSizes.get(i)!) : defaultRow));
-  const columns = new AxisLayout(Math.max(MIN_COLUMNS, lastColumn + 5), (i) => (hiddenColumns.has(i) ? 0 : columnSizes.has(i) ? columnPixels(columnSizes.get(i)!) : defaultColumn));
+  const defaultRow =
+    sheet.rows.defaultSize === undefined ? DEFAULT_ROW : pointPixels(sheet.rows.defaultSize);
+  const defaultColumn =
+    sheet.columns.defaultSize === undefined
+      ? DEFAULT_COLUMN
+      : columnPixels(sheet.columns.defaultSize);
+  const rows = new AxisLayout(Math.max(MIN_ROWS, lastRow + 20), (i) =>
+    hiddenRows.has(i) ? 0 : rowSizes.has(i) ? pointPixels(rowSizes.get(i)!) : defaultRow,
+  );
+  const columns = new AxisLayout(Math.max(MIN_COLUMNS, lastColumn + 5), (i) =>
+    hiddenColumns.has(i)
+      ? 0
+      : columnSizes.has(i)
+        ? columnPixels(columnSizes.get(i)!)
+        : defaultColumn,
+  );
   const byRow = new Map<number, SheetCell[]>();
   for (const cell of sheet.cells) {
     const row = byRow.get(cell.row);
@@ -122,20 +163,24 @@ function layout(sheet: Sheet): SheetLayout {
   for (const merge of sheet.merges) {
     merges.set(`${merge.top}:${merge.left}`, merge);
     // Merges are bounded by the file's extent, which the core already caps.
-    for (let r = merge.top; r <= merge.bottom; r += 1) for (let c = merge.left; c <= merge.right; c += 1) if (r !== merge.top || c !== merge.left) covered.add(`${r}:${c}`);
+    for (let r = merge.top; r <= merge.bottom; r += 1)
+      for (let c = merge.left; c <= merge.right; c += 1)
+        if (r !== merge.top || c !== merge.left) covered.add(`${r}:${c}`);
   }
   // Validations and filters are looked up per drawn cell; a region over a whole column stops at the sheet's extent.
   const lists = new Map<string, readonly string[]>();
   for (const validation of sheet.validations) {
     for (const region of validation.regions) {
       for (let r = region.top; r <= Math.min(region.bottom, lastRow + 20); r += 1)
-        for (let c = region.left; c <= Math.min(region.right, lastColumn + 5); c += 1) lists.set(`${r}:${c}`, validation.options);
+        for (let c = region.left; c <= Math.min(region.right, lastColumn + 5); c += 1)
+          lists.set(`${r}:${c}`, validation.options);
     }
   }
   const filters = new Set<string>();
   for (const table of sheet.tables) {
     if (!table.filter) continue;
-    for (let c = table.region.left; c <= table.region.right; c += 1) filters.add(`${table.region.top}:${c}`);
+    for (let c = table.region.left; c <= table.region.right; c += 1)
+      filters.add(`${table.region.top}:${c}`);
   }
   return {
     sheet,
@@ -153,7 +198,8 @@ function layout(sheet: Sheet): SheetLayout {
 
 const columnName = (index: number) => {
   let name = "";
-  for (let n = index + 1; n > 0; n = Math.floor((n - 1) / 26)) name = String.fromCharCode(65 + ((n - 1) % 26)) + name;
+  for (let n = index + 1; n > 0; n = Math.floor((n - 1) / 26))
+    name = String.fromCharCode(65 + ((n - 1) % 26)) + name;
   return name;
 };
 
@@ -247,28 +293,90 @@ class Grid {
     const firstRow = Math.max(frozenRows, rows.at(frozenHeight + scrollTop) - OVERSCAN);
     const lastRow = Math.min(rows.count - 1, rows.at(frozenHeight + scrollTop + height) + OVERSCAN);
     const firstColumn = Math.max(frozenColumns, columns.at(frozenWidth + scrollLeft) - OVERSCAN);
-    const lastColumn = Math.min(columns.count - 1, columns.at(frozenWidth + scrollLeft + width) + OVERSCAN);
+    const lastColumn = Math.min(
+      columns.count - 1,
+      columns.at(frozenWidth + scrollLeft + width) + OVERSCAN,
+    );
 
-    this.fill(this.areas.body, sheet, firstRow, lastRow, firstColumn, lastColumn, frozenHeight, frozenWidth);
-    this.fill(this.areas.top, sheet, 0, frozenRows - 1, firstColumn, lastColumn, -HEADER_HEIGHT, frozenWidth, "columns");
-    this.fill(this.areas.left, sheet, firstRow, lastRow, 0, frozenColumns - 1, frozenHeight, -HEADER_WIDTH, "rows");
-    this.fill(this.areas.corner, sheet, 0, frozenRows - 1, 0, frozenColumns - 1, -HEADER_HEIGHT, -HEADER_WIDTH, "corner");
+    this.fill(
+      this.areas.body,
+      sheet,
+      firstRow,
+      lastRow,
+      firstColumn,
+      lastColumn,
+      frozenHeight,
+      frozenWidth,
+    );
+    this.fill(
+      this.areas.top,
+      sheet,
+      0,
+      frozenRows - 1,
+      firstColumn,
+      lastColumn,
+      -HEADER_HEIGHT,
+      frozenWidth,
+      "columns",
+    );
+    this.fill(
+      this.areas.left,
+      sheet,
+      firstRow,
+      lastRow,
+      0,
+      frozenColumns - 1,
+      frozenHeight,
+      -HEADER_WIDTH,
+      "rows",
+    );
+    this.fill(
+      this.areas.corner,
+      sheet,
+      0,
+      frozenRows - 1,
+      0,
+      frozenColumns - 1,
+      -HEADER_HEIGHT,
+      -HEADER_WIDTH,
+      "corner",
+    );
   }
 
   /**
    * Fill one area with the cells in a window. `top` and `left` are where the
    * area starts in sheet coordinates, so positions inside it are relative.
    */
-  fill(area: HTMLElement, sheet: SheetLayout, firstRow: number, lastRow: number, firstColumn: number, lastColumn: number, top: number, left: number, headers?: "columns" | "rows" | "corner") {
+  fill(
+    area: HTMLElement,
+    sheet: SheetLayout,
+    firstRow: number,
+    lastRow: number,
+    firstColumn: number,
+    lastColumn: number,
+    top: number,
+    left: number,
+    headers?: "columns" | "rows" | "corner",
+  ) {
     const { rows, columns } = sheet;
     const nodes: HTMLElement[] = [];
     if (headers === "columns" || headers === "corner") {
       const from = headers === "corner" ? 0 : firstColumn;
       const to = headers === "corner" ? sheet.sheet.frozenColumns - 1 : lastColumn;
-      if (headers === "corner") nodes.push(this.box("documents-grid-header", 0, 0, HEADER_WIDTH, HEADER_HEIGHT, ""));
+      if (headers === "corner")
+        nodes.push(this.box("documents-grid-header", 0, 0, HEADER_WIDTH, HEADER_HEIGHT, ""));
       for (let c = from; c <= to; c += 1) {
         if (columns.size(c) === 0) continue;
-        nodes.push(this.box("documents-grid-header", 0, columns.start(c) - left, columns.size(c), HEADER_HEIGHT, columnName(c)));
+        nodes.push(
+          this.box(
+            "documents-grid-header",
+            0,
+            columns.start(c) - left,
+            columns.size(c),
+            HEADER_HEIGHT,
+            columnName(c),
+          ),
+        );
       }
     }
     if (headers === "rows" || headers === "corner") {
@@ -276,7 +384,16 @@ class Grid {
       const to = headers === "corner" ? sheet.sheet.frozenRows - 1 : lastRow;
       for (let r = from; r <= to; r += 1) {
         if (rows.size(r) === 0) continue;
-        nodes.push(this.box("documents-grid-header", rows.start(r) - top, 0, HEADER_WIDTH, rows.size(r), String(r + 1)));
+        nodes.push(
+          this.box(
+            "documents-grid-header",
+            rows.start(r) - top,
+            0,
+            HEADER_WIDTH,
+            rows.size(r),
+            String(r + 1),
+          ),
+        );
       }
     }
     const drawn = new Set<string>();
@@ -288,7 +405,14 @@ class Grid {
       const width = merge ? columns.start(merge.right + 1) - columns.start(c) : columns.size(c);
       const height = merge ? rows.start(merge.bottom + 1) - rows.start(r) : rows.size(r);
       if (width === 0 || height === 0) return;
-      const node = this.box("documents-grid-cell", rows.start(r) - top, columns.start(c) - left, width, height, "");
+      const node = this.box(
+        "documents-grid-cell",
+        rows.start(r) - top,
+        columns.start(c) - left,
+        width,
+        height,
+        "",
+      );
       node.dataset.cell = key;
       if (key === this.#selected) node.dataset.selected = "";
       if (cell) this.content(node, cell, merge !== undefined || this.overflows(sheet, cell));
@@ -310,8 +434,18 @@ class Grid {
     };
     // Merges that start outside the window but reach into it still draw.
     for (const merge of sheet.sheet.merges) {
-      if (merge.bottom >= firstRow && merge.top <= lastRow && merge.right >= firstColumn && merge.left <= lastColumn && (merge.top < firstRow || merge.left < firstColumn)) {
-        place(sheet.byRow.get(merge.top)?.find((cell) => cell.column === merge.left), merge.top, merge.left);
+      if (
+        merge.bottom >= firstRow &&
+        merge.top <= lastRow &&
+        merge.right >= firstColumn &&
+        merge.left <= lastColumn &&
+        (merge.top < firstRow || merge.left < firstColumn)
+      ) {
+        place(
+          sheet.byRow.get(merge.top)?.find((cell) => cell.column === merge.left),
+          merge.top,
+          merge.left,
+        );
       }
     }
     for (let r = firstRow; r <= lastRow; r += 1) {
@@ -344,7 +478,11 @@ class Grid {
   content(node: HTMLElement, cell: SheetCell, spill: boolean) {
     const style = this.workbook.styles[cell.style ?? 0];
     node.style.cssText += this.styleCss[cell.style ?? 0] ?? "";
-    if (!style?.horizontal && (cell.kind === "number" || cell.kind === "bool" || cell.kind === "error")) node.style.justifyContent = cell.kind === "number" ? "flex-end" : "center";
+    if (
+      !style?.horizontal &&
+      (cell.kind === "number" || cell.kind === "bool" || cell.kind === "error")
+    )
+      node.style.justifyContent = cell.kind === "number" ? "flex-end" : "center";
     if (spill) node.dataset.spill = "";
     if (cell.bar) {
       const bar = this.doc.createElement("span");
@@ -379,7 +517,9 @@ class Grid {
       node.className = "documents-grid-drawing";
       node.style.cssText = `top:${box.top}px;left:${box.left}px;width:${box.width}px;height:${box.height}px`;
       if (drawing.content.kind === "image") {
-        const url = URL.createObjectURL(new Blob([drawing.content.data as BlobPart], { type: drawing.content.mediaType }));
+        const url = URL.createObjectURL(
+          new Blob([drawing.content.data as BlobPart], { type: drawing.content.mediaType }),
+        );
         this.urls.push(url);
         const image = this.doc.createElement("img");
         image.src = url;
@@ -401,9 +541,17 @@ class Grid {
     const from = at(drawing.placement.from);
     if (drawing.placement.kind === "cells") {
       const to = at(drawing.placement.to);
-      return { ...from, width: Math.max(1, to.left - from.left), height: Math.max(1, to.top - from.top) };
+      return {
+        ...from,
+        width: Math.max(1, to.left - from.left),
+        height: Math.max(1, to.top - from.top),
+      };
     }
-    return { ...from, width: pointPixels(drawing.placement.width), height: pointPixels(drawing.placement.height) };
+    return {
+      ...from,
+      width: pointPixels(drawing.placement.width),
+      height: pointPixels(drawing.placement.height),
+    };
   }
 
   readonly click = (event: MouseEvent) => {
@@ -465,7 +613,10 @@ class Grid {
     if (!sheet) return;
     const top = (sheet.rows.start(row) - sheet.frozenHeight) * this.#zoom;
     const left = (sheet.columns.start(column) - sheet.frozenWidth) * this.#zoom;
-    this.element.scrollTo({ top: Math.max(0, top - this.element.clientHeight / 2), left: Math.max(0, left - this.element.clientWidth / 3) });
+    this.element.scrollTo({
+      top: Math.max(0, top - this.element.clientHeight / 2),
+      left: Math.max(0, left - this.element.clientWidth / 3),
+    });
     this.#selected = `${row}:${column}`;
     this.draw();
   }
@@ -491,7 +642,12 @@ function lowerBound(cells: readonly SheetCell[], column: number) {
 }
 
 const borderWidth = { thin: 1, medium: 2, thick: 3 } as const;
-const justify = { start: "flex-start", center: "center", end: "flex-end", justify: "flex-start" } as const;
+const justify = {
+  start: "flex-start",
+  center: "center",
+  end: "flex-end",
+  justify: "flex-start",
+} as const;
 
 /** A style as inline CSS, built once per style rather than once per cell. */
 function styleCss(style: CellStyle): string {
@@ -500,12 +656,21 @@ function styleCss(style: CellStyle): string {
   if (style.italic) css.push("font-style:italic");
   const lines = [style.underline && "underline", style.strike && "line-through"].filter(Boolean);
   if (lines.length) css.push(`text-decoration:${lines.join(" ")}`);
-  if (style.fontFamily) css.push(`font-family:${JSON.stringify(style.fontFamily)},var(--documents-font)`);
+  if (style.fontFamily)
+    css.push(`font-family:${JSON.stringify(style.fontFamily)},var(--documents-font)`);
   if (style.fontSize) css.push(`font-size:${((style.fontSize * 4) / 3).toFixed(1)}px`);
   if (style.color) css.push(`color:${style.color}`);
   if (style.fill) css.push(`background:${style.fill}`);
-  for (const [side, border] of [["top", style.borderTop], ["right", style.borderRight], ["bottom", style.borderBottom], ["left", style.borderLeft]] as const) {
-    if (border) css.push(`border-${side}:${border.double ? 3 : borderWidth[border.width]}px ${border.double ? "double" : border.dashed ? "dashed" : "solid"} ${border.color ?? "currentColor"}`);
+  for (const [side, border] of [
+    ["top", style.borderTop],
+    ["right", style.borderRight],
+    ["bottom", style.borderBottom],
+    ["left", style.borderLeft],
+  ] as const) {
+    if (border)
+      css.push(
+        `border-${side}:${border.double ? 3 : borderWidth[border.width]}px ${border.double ? "double" : border.dashed ? "dashed" : "solid"} ${border.color ?? "currentColor"}`,
+      );
   }
   if (style.horizontal) css.push(`justify-content:${justify[style.horizontal]}`);
   if (style.horizontal === "center") css.push("text-align:center");
@@ -523,7 +688,9 @@ function gridSearch(grid: Grid, workbook: Workbook, onSheet: (index: number) => 
       const needle = query.toLocaleLowerCase();
       matches = [];
       workbook.sheets.forEach((sheet, index) => {
-        for (const cell of sheet.cells) if (cell.text.toLocaleLowerCase().includes(needle)) matches.push({ sheet: index, row: cell.row, column: cell.column });
+        for (const cell of sheet.cells)
+          if (cell.text.toLocaleLowerCase().includes(needle))
+            matches.push({ sheet: index, row: cell.row, column: cell.column });
       });
       return matches.length;
     },

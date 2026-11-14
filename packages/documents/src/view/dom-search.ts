@@ -47,7 +47,11 @@ export function domSearch(root: () => Element | null): Searchable {
       let visited = 0;
       for (const node of textNodes(element)) {
         const haystack = (node.nodeValue ?? "").toLocaleLowerCase();
-        for (let at = haystack.indexOf(needle); at >= 0; at = haystack.indexOf(needle, at + needle.length)) {
+        for (
+          let at = haystack.indexOf(needle);
+          at >= 0;
+          at = haystack.indexOf(needle, at + needle.length)
+        ) {
           const range = element.ownerDocument.createRange();
           range.setStart(node, at);
           range.setEnd(node, at + needle.length);

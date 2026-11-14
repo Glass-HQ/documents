@@ -1,4 +1,12 @@
-import { buildPresentation, parseZipLazyMedia, PptxViewer, RECOMMENDED_ZIP_LIMITS, type PresentationData, type SearchHighlightHandle, type TextSearchResult } from "@aiden0z/pptx-renderer";
+import {
+  buildPresentation,
+  parseZipLazyMedia,
+  PptxViewer,
+  RECOMMENDED_ZIP_LIMITS,
+  type PresentationData,
+  type SearchHighlightHandle,
+  type TextSearchResult,
+} from "@aiden0z/pptx-renderer";
 import { DocumentError } from "../../core/errors.js";
 import { isAllowedLink } from "../links.js";
 import { mapSymbolFonts } from "../symbol-fonts.js";
@@ -16,7 +24,10 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
   signal.throwIfAborted();
   const presentation = await buildPresentation(files, { lazySlides: true });
   if (presentation.slides.length > MAX_SLIDES)
-    throw new DocumentError(`This presentation has ${presentation.slides.length.toLocaleString()} slides, more than the ${MAX_SLIDES.toLocaleString()} the viewer shows.`, { code: "resourceLimit", format: "pptx" });
+    throw new DocumentError(
+      `This presentation has ${presentation.slides.length.toLocaleString()} slides, more than the ${MAX_SLIDES.toLocaleString()} the viewer shows.`,
+      { code: "resourceLimit", format: "pptx" },
+    );
   blockExternalMedia(presentation);
   const container = element.ownerDocument.createElement("div");
   container.className = "documents-slides";
@@ -84,14 +95,24 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
   };
 };
 
-type Relationships = { readonly rels: Map<string, { readonly targetMode?: string; readonly type: string }> };
+type Relationships = {
+  readonly rels: Map<string, { readonly targetMode?: string; readonly type: string }>;
+};
 
 /** Drop relationships to media outside the file before any slide, layout or master renders. */
 function blockExternalMedia(presentation: PresentationData) {
-  const owners: Relationships[] = [...presentation.slides, ...presentation.layouts.values(), ...presentation.masters.values()];
+  const owners: Relationships[] = [
+    ...presentation.slides,
+    ...presentation.layouts.values(),
+    ...presentation.masters.values(),
+  ];
   for (const owner of owners) {
     for (const [id, rel] of owner.rels) {
-      if (rel.targetMode?.trim().toLowerCase() === "external" && !rel.type.toLowerCase().endsWith("/hyperlink")) owner.rels.delete(id);
+      if (
+        rel.targetMode?.trim().toLowerCase() === "external" &&
+        !rel.type.toLowerCase().endsWith("/hyperlink")
+      )
+        owner.rels.delete(id);
     }
   }
 }
