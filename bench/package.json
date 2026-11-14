@@ -2,8 +2,8 @@
   "name": "documents-bench",
   "private": true,
   "dependencies": {
-    "mammoth": "^1.8.0",
-    "turndown": "^7.2.0",
-    "turndown-plugin-gfm": "^1.0.2"
+    "mammoth": "1.13.0",
+    "turndown": "7.2.5",
+    "turndown-plugin-gfm": "1.0.2"
   }
 }
