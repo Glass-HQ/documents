@@ -1,0 +1,8 @@
+{
+  "name": "@glass-hq/oxlint-plugin-glass",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@oxlint/plugins": "1.93.0"
+  }
+}

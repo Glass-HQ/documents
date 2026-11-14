@@ -2,20 +2,20 @@
   "name": "@glass-hq/documents",
   "version": "0.3.0",
   "description": "Parse any file to Markdown and render it in the browser: PDF, Office, OpenDocument, EPUB, spreadsheets, images, media and more.",
-  "type": "module",
   "license": "MIT",
-  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Glass-HQ/documents.git",
+    "directory": "packages/documents"
+  },
   "files": [
     "dist",
     "README.md",
     "LICENSE",
     "NOTICE"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Glass-HQ/documents.git",
-    "directory": "packages/documents"
-  },
+  "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -32,20 +32,8 @@
     "./pdf.worker.min.mjs": "./dist/pdf.worker.min.mjs"
   },
   "scripts": {
-    "build": "node ../../scripts/build-core-wasm.mjs && rm -rf dist && tsc -p tsconfig.build.json && cp -R src/core/wasm src/core/wasm-pdf dist/core/ && rm -f dist/core/wasm/.gitignore dist/core/wasm-pdf/.gitignore && cp ../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs dist/pdf.worker.min.mjs",
-    "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
-  },
-  "engines": {
-    "node": ">=22"
-  },
-  "peerDependencies": {
-    "react": ">=18.2"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
+    "build": "node ../../scripts/build-core-wasm.mjs && rm -rf dist && tsc -p tsconfig.build.json && node ../../scripts/copy-package-assets.ts",
+    "test": "vp test"
   },
   "dependencies": {
     "@aiden0z/pptx-renderer": "1.4.0",
@@ -55,12 +43,22 @@
     "pdfjs-dist": "6.4.299"
   },
   "devDependencies": {
-    "@types/node": "^26.6.6",
-    "@types/react": "^19.3.0",
-    "jsdom": "^30.1.3",
-    "react": "^19.3.1",
-    "react-dom": "19.3.1",
-    "typescript": "7.0.2",
-    "vitest": "^5.0.5"
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=18.2"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

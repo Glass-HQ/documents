@@ -3,13 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "dev": "vp dev",
+    "build": "vp build"
   },
   "dependencies": {
     "@glass-hq/documents": "workspace:*"
   },
   "devDependencies": {
-    "vite": "^8.3.5"
+    "vite-plus": "catalog:"
   }
 }

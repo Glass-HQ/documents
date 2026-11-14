@@ -1,5 +1,5 @@
 {
-  "name": "anydoc-bench",
+  "name": "documents-bench",
   "private": true,
   "dependencies": {
     "mammoth": "^1.8.0",
