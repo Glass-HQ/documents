@@ -19,11 +19,18 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
   pdfjs.GlobalWorkerOptions.workerSrc = String(
     options.pdfWorker ?? new URL("../../pdf.worker.min.mjs", import.meta.url),
   );
+  const renderer =
+    options.pdfRenderer === true
+      ? new URL("../../pdf.renderer.min.mjs", import.meta.url)
+      : options.pdfRenderer || undefined;
+  if (renderer) pdfjs.GlobalWorkerOptions.rendererSrc = String(renderer);
   const task = pdfjs.getDocument({
     data: bytes.slice(),
     enableXfa: false,
     disableAutoFetch: true,
     disableStream: true,
+    // Set per document, since rendererSrc is global and another viewer may have set it.
+    disableWorkerRendering: !renderer,
   });
   signal.addEventListener("abort", () => void task.destroy(), { once: true });
   const pdf = await task.promise;

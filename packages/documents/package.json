@@ -29,7 +29,8 @@
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
     },
-    "./pdf.worker.min.mjs": "./dist/pdf.worker.min.mjs"
+    "./pdf.worker.min.mjs": "./dist/pdf.worker.min.mjs",
+    "./pdf.renderer.min.mjs": "./dist/pdf.renderer.min.mjs"
   },
   "scripts": {
     "build": "node ../../scripts/build-core-wasm.mjs && rm -rf dist && tsc -p tsconfig.build.json && node ../../scripts/copy-package-assets.ts",
@@ -40,7 +41,7 @@
     "docx-preview": "^0.4.1",
     "micromark": "^4.0.3",
     "micromark-extension-gfm": "^3.0.0",
-    "pdfjs-dist": "6.4.299"
+    "pdfjs-dist": "6.5.438"
   },
   "devDependencies": {
     "@types/node": "catalog:",

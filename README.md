@@ -75,6 +75,7 @@ function Viewer({ file }: { file: File }) {
 - `onLink(url)`: links in a document never navigate the page. Clicks on http(s) and mailto links come here.
 - `highlight(text, name)`: text and code show plain unless you pass a highlighter. It returns an element, or `{ element, destroy }` when it holds resources. Search reaches into its open shadow roots.
 - `pdfWorker`: where pdf.js's worker is served from, if your bundler doesn't resolve it. The package exports it as `@glass-hq/documents/pdf.worker.min.mjs`.
+- `pdfRenderer`: draw PDF pages on a worker with pdf.js's renderer, off the main thread. `true` uses the copy the package ships (`@glass-hq/documents/pdf.renderer.min.mjs`), a URL says where it's served from. Off by default; pdf.js falls back to the main thread if the worker can't start.
 - `format`, `name`, `mediaType`, `maxBytes`, `signal`: as for `toMarkdown`.
 
 ### Theming

@@ -22,6 +22,13 @@ export interface ViewerOptions extends OpenOptions {
   readonly onLink?: ((url: string) => void) | undefined;
   /** Where pdf.js's worker script is served from, if your bundler doesn't resolve it. */
   readonly pdfWorker?: string | URL | undefined;
+  /**
+   * Draw PDF pages on a worker with pdf.js's renderer, so a heavy page never
+   * holds up the main thread. `true` uses the copy this package ships, a URL
+   * says where it's served from. Off by default: pages draw on the main
+   * thread, which pdf.js also falls back to if the worker can't start.
+   */
+  readonly pdfRenderer?: boolean | string | URL | undefined;
 }
 
 export type Highlighted =
