@@ -62,6 +62,18 @@ export default defineConfig({
     rules: {
       "glass/no-em-dash-copy": "error",
       "react-in-jsx-scope": "off",
+      "typescript/consistent-return": "off",
+      "typescript/no-floating-promises": "off",
+      "unicorn/consistent-function-scoping": "off",
+      "unicorn/no-array-sort": "off",
+      // Sequential awaits here are deliberate: pages measured in order, wasm builds one at a time,
+      // streams read chunk by chunk.
+      "eslint/no-await-in-loop": "off",
+      // DOM nodes can come from another document, such as an iframe's, where instanceof guards
+      // fail, and values crossing the wasm and worker boundaries were already checked by the core.
+      "typescript/no-unsafe-type-assertion": "off",
+      // Flags Worker.postMessage too, which has no target origin.
+      "unicorn/require-post-message-target-origin": "off",
     },
     options: {
       typeAware: true,

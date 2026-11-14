@@ -127,28 +127,28 @@ export const render: RenderFunction = async ({ element, bytes, signal, options, 
     search: pdfSearch(pdf, pages),
     thumbnails: {
       render(index, target, width) {
-        let task: RenderTask | undefined;
+        let drawing: RenderTask | undefined;
         let cancelled = false;
         void pdf.getPage(index + 1).then((page) => {
           if (cancelled) return;
-          const base = page.getViewport({ scale: 1 });
-          const viewport = page.getViewport({ scale: width / base.width });
+          const size = page.getViewport({ scale: 1 });
+          const viewport = page.getViewport({ scale: width / size.width });
           const ratio = Math.min(globalThis.devicePixelRatio || 1, 2);
           const canvas = target.ownerDocument.createElement("canvas");
           canvas.width = Math.floor(viewport.width * ratio);
           canvas.height = Math.floor(viewport.height * ratio);
           canvas.style.cssText = `display:block;width:${viewport.width}px;height:${viewport.height}px;background:#fff`;
           target.replaceChildren(canvas);
-          task = page.render({
+          drawing = page.render({
             canvas,
             viewport,
             transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
           });
-          task.promise.catch(() => undefined);
+          drawing.promise.catch(() => undefined);
         });
         return () => {
           cancelled = true;
-          task?.cancel();
+          drawing?.cancel();
           target.replaceChildren();
         };
       },

@@ -12,7 +12,7 @@ import { numberLists } from "../docx-numbering.js";
  * and the markup it makes is sanitized before it's shown.
  */
 export const render: RenderFunction = async ({ element, bytes, signal, options }) => {
-  const options_ = {
+  const previewOptions = {
     className: "documents-docx",
     inWrapper: false,
     breakPages: true,
@@ -26,11 +26,11 @@ export const render: RenderFunction = async ({ element, bytes, signal, options }
     renderAltChunks: false,
     useBase64URL: false,
   };
-  const parsed = await parseAsync(bytes.slice().buffer, options_);
+  const parsed = await parseAsync(bytes.slice().buffer, previewOptions);
   signal.throwIfAborted();
   const doc = element.ownerDocument;
   const rendered = doc.createDocumentFragment();
-  rendered.append(...(await renderDocument(parsed, options_)));
+  rendered.append(...(await renderDocument(parsed, previewOptions)));
   signal.throwIfAborted();
   sanitize(rendered);
   mapSymbolFonts(rendered);

@@ -16,8 +16,8 @@ function mediaElement(context: RenderContext, tag: "img" | "video" | "audio"): R
     media.alt = name ?? "";
     media.decoding = "async";
   } else {
-    (media as HTMLMediaElement).controls = true;
-    (media as HTMLMediaElement).preload = "metadata";
+    media.controls = true;
+    media.preload = "metadata";
   }
   media.addEventListener("error", () => {
     const message = element.ownerDocument.createElement("p");

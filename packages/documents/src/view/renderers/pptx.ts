@@ -22,7 +22,7 @@ const MAX_SLIDES = 2_000;
 export const render: RenderFunction = async ({ element, bytes, signal, options, onPosition }) => {
   const files = await parseZipLazyMedia(bytes.slice().buffer, RECOMMENDED_ZIP_LIMITS);
   signal.throwIfAborted();
-  const presentation = await buildPresentation(files, { lazySlides: true });
+  const presentation = buildPresentation(files, { lazySlides: true });
   if (presentation.slides.length > MAX_SLIDES)
     throw new DocumentError(
       `This presentation has ${presentation.slides.length.toLocaleString()} slides, more than the ${MAX_SLIDES.toLocaleString()} the viewer shows.`,

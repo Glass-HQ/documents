@@ -15,7 +15,9 @@ const search = Object.assign(document.createElement("input"), {
 });
 search.addEventListener("input", () => viewer.search(search.value));
 search.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") event.shiftKey ? viewer.previousMatch() : viewer.nextMatch();
+  if (event.key !== "Enter") return;
+  if (event.shiftKey) viewer.previousMatch();
+  else viewer.nextMatch();
 });
 
 async function show(name, source) {

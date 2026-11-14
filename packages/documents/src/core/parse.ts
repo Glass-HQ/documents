@@ -184,20 +184,20 @@ function coreWorker(): Worker {
     type: "module",
     name: "documents-core",
   });
-  worker.onmessage = ({ data }: MessageEvent<CoreResponse>) => {
+  worker.addEventListener("message", ({ data }: MessageEvent<CoreResponse>) => {
     const task = pending.get(data.id);
     pending.delete(data.id);
     if (!task) return;
     if (data.ok) task.resolve(data.value);
     else task.reject(Object.assign(new Error(data.error.message), data.error));
-  };
-  worker.onerror = (event) => {
+  });
+  worker.addEventListener("error", (event) => {
     for (const task of pending.values())
       task.reject(new Error(event.message || "The document worker failed."));
     pending.clear();
     worker?.terminate();
     worker = undefined;
-  };
+  });
   return worker;
 }
 

@@ -25,7 +25,7 @@ function load(build: "core" | "pdf"): Promise<CoreModule> {
                 new URL("./wasm-pdf/anydoc_wasm_bg.wasm", import.meta.url),
               ),
             });
-            return m as CoreModule;
+            return m;
           })
         : import("./wasm/anydoc_wasm.js").then(async (m) => {
             await m.default({

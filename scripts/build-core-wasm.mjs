@@ -23,10 +23,12 @@ const sources = Math.max(
   await newest(join(root, "wasm")),
   (await stat(join(root, "Cargo.lock"))).mtimeMs,
 );
-for (const [folder, features] of [
+/** @type {[string, string[]][]} */
+const builds = [
   ["wasm", ["--no-default-features"]],
   ["wasm-pdf", []],
-]) {
+];
+for (const [folder, features] of builds) {
   const out = join(core, folder);
   const built = await stat(join(out, "anydoc_wasm_bg.wasm")).then(
     (info) => info.mtimeMs,

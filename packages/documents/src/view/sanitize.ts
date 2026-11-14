@@ -24,6 +24,8 @@ export function sanitize(root: Element | DocumentFragment): void {
   for (const style of root.querySelectorAll("style"))
     style.textContent = cleanCss(style.textContent ?? "");
   for (const element of root.querySelectorAll("*")) {
+    // A copy: `attributes` is live, and removing from it while iterating would skip some.
+    // oxlint-disable-next-line unicorn/no-useless-spread
     for (const attribute of [...element.attributes]) {
       const name = attribute.name.toLowerCase();
       if (name.startsWith("on") || name === "srcdoc" || name === "srcset" || name === "ping")

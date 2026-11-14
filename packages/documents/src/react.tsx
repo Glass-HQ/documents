@@ -34,7 +34,9 @@ export function useDocumentViewer(
 ): UseDocumentViewer {
   const [element, setElement] = useState<HTMLElement | null>(null);
   const [viewer, setViewer] = useState<DocumentViewer | null>(null);
+  // The latest options, read when they're used, so callers needn't keep them stable.
   const latest = useRef(options);
+  // oxlint-disable-next-line react/refs
   latest.current = options;
   useEffect(() => {
     if (!element) return;
@@ -54,6 +56,8 @@ export function useDocumentViewer(
       next.destroy();
       setViewer(null);
     };
+    // The options that decide what's opened reopen the viewer; the rest are read through `latest`.
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [element, source, options.format, options.name, options.mediaType, options.maxBytes]);
   const state = useSyncExternalStore(
     viewer?.subscribe ?? noop,
@@ -81,6 +85,7 @@ export function DocumentView({
 }: DocumentViewProps): ReactElement {
   const { ref, viewer } = useDocumentViewer(source, options);
   const report = useRef(onViewer);
+  // oxlint-disable-next-line react/refs
   report.current = onViewer;
   useEffect(() => report.current?.(viewer), [viewer]);
   return <div className={className} ref={ref} style={{ height: "100%", ...style }} />;

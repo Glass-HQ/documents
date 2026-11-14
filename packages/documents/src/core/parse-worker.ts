@@ -4,7 +4,7 @@ import type { CoreRequest, CoreResponse } from "./parse.js";
 
 declare const self: DedicatedWorkerGlobalScope;
 
-self.onmessage = async ({ data }: MessageEvent<CoreRequest>) => {
+self.addEventListener("message", async ({ data }: MessageEvent<CoreRequest>) => {
   let response: CoreResponse;
   try {
     response = {
@@ -25,4 +25,4 @@ self.onmessage = async ({ data }: MessageEvent<CoreRequest>) => {
     };
   }
   self.postMessage(response);
-};
+});

@@ -94,7 +94,7 @@ export function numberLists(root: HTMLElement, numbering: Numbering | undefined)
       started.add(`${numId}:${ilvl}`);
       state[ilvl] = undefined;
     }
-    state[ilvl] = state[ilvl] === undefined ? start : state[ilvl]! + 1;
+    state[ilvl] = state[ilvl] === undefined ? start : state[ilvl] + 1;
     for (let deeper = ilvl + 1; deeper < state.length; deeper += 1) state[deeper] = undefined;
     const text = (level.text ?? `%${ilvl + 1}.`).replace(/%(\d)/gu, (_, n: string) => {
       const at = Number(n) - 1;
