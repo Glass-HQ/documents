@@ -30,6 +30,14 @@ The type-aware lint reads the types wasm-pack generates for the core into `packa
 - `.github/workflows/release.yml` runs on the tag: it checks and builds everything, builds `CHANGELOG.md` into the package, publishes to npm with trusted publishing and creates the GitHub release. Run from the Actions tab, it's a dry run.
 - Never push, publish or tag on GitHub without being asked.
 
+## Before the next release
+
+The repository moved to Vite+, Bun and tag-based releases in November 2026; nothing has been released since. The first release after that change needs these once, then delete this section:
+
+- On npmjs.com, point `@glass-hq/documents`'s trusted publisher at `.github/workflows/release.yml` with environment `npm` (it was `publish-documents.yml`). npm refuses the publish otherwise.
+- Write `changelog/<version>.md` for everything since 0.3.0: pdf.js 6.5 and the opt-in `pdfRenderer` worker, and pdf-inspector 1.26's PDF-to-Markdown changes (`<sup>`, `<sub>`, `<s>` in the output, right-to-left text order, a heading that now comes out as bold text).
+- After publishing, move Glass (`Glass-HQ/Glass`) to the new version.
+
 ## Writing
 
 Plain English in code comments, docs, changelog entries and commit messages. No em dashes in copy: use a comma, colon, parentheses or a new sentence. The lint enforces this in code (`glass/no-em-dash-copy`). Commit subjects are plain sentences, like "Move the build to Vite+".
